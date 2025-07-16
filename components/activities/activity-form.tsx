@@ -49,6 +49,17 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
 
   // 계획 항목 선택 시 자동 입력
   const handlePlanItemSelect = (itemId: string) => {
+    if (itemId === "manual") {
+      setFormData({
+        ...formData,
+        planItemId: "",
+        title: "",
+        category: Category.STUDY,
+        minutes: "30",
+      })
+      return
+    }
+    
     const item = todayPlan?.items.find(i => i.id === itemId)
     if (item) {
       setFormData({
@@ -139,7 +150,7 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
                   <SelectValue placeholder="계획 항목을 선택하세요 (선택사항)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">직접 입력</SelectItem>
+                  <SelectItem value="manual">직접 입력</SelectItem>
                   {uncompletedItems.map(item => (
                     <SelectItem key={item.id} value={item.id}>
                       {item.title} ({item.targetMinutes}분)
