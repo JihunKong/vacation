@@ -114,6 +114,7 @@ export async function POST(req: NextRequest) {
         data: {
           totalXP: { increment: xpEarned },
           experience: { increment: xpEarned },
+          totalMinutes: { increment: minutes },
           strength: { increment: statPoints.strength || 0 },
           intelligence: { increment: statPoints.intelligence || 0 },
           dexterity: { increment: statPoints.dexterity || 0 },
@@ -124,13 +125,14 @@ export async function POST(req: NextRequest) {
       })
 
       // 레벨업 확인
-      const { level } = calculateLevel(updatedProfile.totalXP)
+      const { level, xpForNextLevel } = calculateLevel(updatedProfile.totalXP)
       if (level > updatedProfile.level) {
         await tx.studentProfile.update({
           where: { id: studentProfileId },
           data: {
             level,
             experience: 0, // 레벨업 시 경험치 초기화
+            xpForNextLevel,
           },
         })
       }
