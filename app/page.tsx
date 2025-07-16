@@ -31,7 +31,7 @@ export default async function Home() {
           </Button>
         </div>
         <p className="text-sm text-gray-500 pt-4">
-          ※ 완도고등학교 2학년 학생만 이용 가능합니다
+          ※ 모든 학생들이 이용 가능합니다
         </p>
       </div>
     </main>

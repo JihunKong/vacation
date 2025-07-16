@@ -11,7 +11,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          hd: "gwe.go.kr", // 완도고등학교 도메인으로 제한
           prompt: "consent",
           access_type: "offline",
           response_type: "code"
@@ -21,9 +20,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      if (account?.provider === "google") {
-        return profile?.email?.endsWith("@gwe.go.kr") ?? false
-      }
+      // 모든 Google 계정 허용
       return true
     },
     async session({ session, token }) {

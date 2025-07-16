@@ -50,7 +50,7 @@ export default function SignInPage() {
             Google 계정으로 로그인
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            ※ @gwe.go.kr 이메일로만 로그인 가능합니다
+            ※ Google 계정으로 로그인하세요
           </p>
         </CardContent>
       </Card>
