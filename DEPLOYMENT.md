@@ -4,7 +4,13 @@
 
 Railway 대시보드 (https://railway.app) 에서 vacation 프로젝트를 찾아 다음 환경변수를 설정하세요:
 
-### 필수 환경변수
+### 1단계: PostgreSQL 데이터베이스 추가
+1. Railway 프로젝트에서 **New** 버튼 클릭
+2. **Database** → **Add PostgreSQL** 선택
+3. PostgreSQL이 생성되면 DATABASE_URL이 자동으로 설정됩니다
+
+### 2단계: 환경변수 추가
+프로젝트의 **Variables** 탭에서 다음 변수들을 추가하세요:
 
 1. **NEXTAUTH_URL**
    ```
@@ -17,8 +23,8 @@ Railway 대시보드 (https://railway.app) 에서 vacation 프로젝트를 찾�
    ```
 
 3. **DATABASE_URL**
-   - Railway PostgreSQL 서비스를 프로젝트에 추가하면 자동으로 설정됩니다
-   - 또는 기존 PostgreSQL의 DATABASE_URL을 사용하세요
+   - PostgreSQL 서비스를 추가하면 자동으로 설정됩니다
+   - 수동으로 설정할 경우: `postgresql://user:password@host:port/database`
 
 4. **OPENAI_API_KEY** (선택사항 - 교사 기능용)
    ```
@@ -27,10 +33,11 @@ Railway 대시보드 (https://railway.app) 에서 vacation 프로젝트를 찾�
 
 ## 데이터베이스 설정
 
-배포 후 다음 명령을 실행하여 데이터베이스 스키마를 생성하세요:
+빌드 과정에서 자동으로 데이터베이스 스키마가 생성됩니다.
+만약 수동으로 실행해야 한다면:
 
 ```bash
-npx prisma db push
+railway run npm run db:push
 ```
 
 ## 확인사항
