@@ -125,14 +125,14 @@ export async function POST(req: NextRequest) {
       })
 
       // 레벨업 확인
-      const { level, xpForNextLevel } = calculateLevel(updatedProfile.totalXP)
+      const { level, requiredXP } = calculateLevel(updatedProfile.totalXP)
       if (level > updatedProfile.level) {
         await tx.studentProfile.update({
           where: { id: studentProfileId },
           data: {
             level,
             experience: 0, // 레벨업 시 경험치 초기화
-            xpForNextLevel,
+            xpForNextLevel: requiredXP,
           },
         })
       }
