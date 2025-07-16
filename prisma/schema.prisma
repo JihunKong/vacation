@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 모델
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          Role      @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // 학생 프로필
+  studentProfile StudentProfile?
+  
+  // 교사가 작성한 요약
+  teacherSummaries Summary[] @relation("TeacherSummaries")
+}
+
+// 역할 열거형
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+// 학생 프로필 (아바타 정보 포함)
+model StudentProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // 기본 정보
+  level           Int       @default(1)
+  experience      Int       @default(0)
+  totalXP         Int       @default(0)
+  
+  // 아바타 능력치
+  strength        Int       @default(10)  // STR: 힘 (운동)
+  intelligence    Int       @default(10)  // INT: 지능 (학습, 독서)
+  dexterity       Int       @default(10)  // DEX: 민첩성 (취미)
+  charisma        Int       @default(10)  // CHA: 매력 (봉사)
+  vitality        Int       @default(10)  // VIT: 활력 (기타)
+  
+  // 통계
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  totalDays       Int       @default(0)
+  
+  // 관계
+  plans           Plan[]
+  activities      Activity[]
+  badges          Badge[]
+  summaries       Summary[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 일일 계획
+model Plan {
+  id              String    @id @default(cuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  date            DateTime  @db.Date
+  items           PlanItem[]
+  
+  isCompleted     Boolean   @default(false)
+  completedAt     DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([studentId, date])
+}
+
+// 계획 항목
+model PlanItem {
+  id              String    @id @default(cuid())
+  planId          String
+  plan            Plan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  
+  title           String
+  category        Category
+  targetMinutes   Int
+  
+  isCompleted     Boolean   @default(false)
+  actualMinutes   Int?
+  
+  order           Int
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 활동 카테고리
+enum Category {
+  STUDY      // 학습
+  EXERCISE   // 운동
+  READING    // 독서
+  HOBBY      // 취미
+  VOLUNTEER  // 봉사
+  OTHER      // 기타
+}
+
+// 활동 기록
+model Activity {
+  id              String    @id @default(cuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?
+  category        Category
+  minutes         Int
+  
+  date            DateTime  @db.Date
+  
+  // 획득한 경험치와 능력치
+  xpEarned        Int
+  statPoints      Json      // { strength: 0, intelligence: 0, ... }
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 배지/업적
+model Badge {
+  id              String    @id @default(cuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  type            BadgeType
+  tier            Int       @default(1) // 1: 브론즈, 2: 실버, 3: 골드
+  
+  earnedAt        DateTime  @default(now())
+}
+
+// 배지 타입
+enum BadgeType {
+  STUDY_MASTER      // 학습의 달인
+  FITNESS_GURU      // 운동의 달인
+  BOOKWORM         // 독서왕
+  HOBBY_EXPERT     // 취미의 달인
+  VOLUNTEER_HERO   // 봉사왕
+  STREAK_KEEPER    // 연속 달성
+  LEVEL_MILESTONE  // 레벨 달성
+}
+
+// AI 요약
+model Summary {
+  id              String    @id @default(cuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  teacherId       String
+  teacher         User      @relation("TeacherSummaries", fields: [teacherId], references: [id])
+  
+  period          SummaryPeriod
+  startDate       DateTime  @db.Date
+  endDate         DateTime  @db.Date
+  
+  content         String    @db.Text
+  aiGenerated     Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 요약 기간
+enum SummaryPeriod {
+  WEEKLY
+  MONTHLY
+  FULL
+}
