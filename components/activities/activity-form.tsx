@@ -33,7 +33,13 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
   const [showResult, setShowResult] = useState(false)
   const [earnedXP, setEarnedXP] = useState(0)
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string
+    description: string
+    category: Category
+    minutes: string
+    planItemId: string
+  }>({
     title: "",
     description: "",
     category: Category.STUDY,
