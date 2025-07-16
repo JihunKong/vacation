@@ -1,0 +1,2 @@
+NEXTAUTH_URL=https://vacation-production-f151.up.railway.app
+NEXTAUTH_SECRET=teNf2G/hrXQAmzakPktmEA6Ptow+BbOJu7PP7hX2GyY=
