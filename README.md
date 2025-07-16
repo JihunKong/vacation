@@ -21,7 +21,7 @@
 - **Framework**: Next.js 14 (App Router)
 - **Database**: PostgreSQL (Railway)
 - **ORM**: Prisma
-- **Authentication**: NextAuth.js (Google OAuth)
+- **Authentication**: NextAuth.js (Credentials)
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Deployment**: Railway
 
@@ -35,8 +35,6 @@
 DATABASE_URL="postgresql://..."
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="..."
-GOOGLE_CLIENT_ID="..."
-GOOGLE_CLIENT_SECRET="..."
 OPENAI_API_KEY="..."
 ```
 
@@ -62,7 +60,7 @@ npm run dev
 
 ## 📱 주요 화면
 
-- **로그인**: Google OAuth를 통한 안전한 로그인
+- **로그인/회원가입**: 이메일과 비밀번호를 통한 간단한 인증
 - **대시보드**: 아바타 정보, 오늘의 계획, 최근 활동 표시
 - **일일 계획**: 하루 동안 수행할 활동 계획 작성
 - **활동 기록**: 완료한 활동 기록 및 경험치 획득

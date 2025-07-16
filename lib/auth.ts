@@ -1,38 +1,71 @@
 import { NextAuthOptions } from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import { PrismaAdapter } from "@auth/prisma-adapter"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/db"
+import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  session: {
+    strategy: "jwt",
+  },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "이메일", type: "email" },
+        password: { label: "비밀번호", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email
+          }
+        })
+
+        if (!user || !user.password) {
+          return null
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        )
+
+        if (!isPasswordValid) {
+          return null
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
         }
       }
     })
   ],
   callbacks: {
-    async signIn({ account, profile }) {
-      // 모든 Google 계정 허용
-      return true
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        token.role = user.role
+      }
+      return token
     },
     async session({ session, token }) {
-      if (session?.user && token.sub) {
+      if (session?.user) {
+        session.user.id = token.id as string
+        session.user.role = token.role as string
+        
         const user = await prisma.user.findUnique({
-          where: { id: token.sub },
+          where: { id: token.id as string },
           include: { studentProfile: true }
         })
         
         if (user) {
-          session.user.id = user.id
-          session.user.role = user.role
           session.user.hasProfile = !!user.studentProfile
         }
       }
