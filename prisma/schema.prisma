@@ -47,6 +47,7 @@ model StudentProfile {
   level           Int       @default(1)
   experience      Int       @default(0)
   totalXP         Int       @default(0)
+  avatarImageUrl  String?
   
   // 아바타 능력치
   strength        Int       @default(10)  // STR: 힘 (운동)
@@ -59,6 +60,8 @@ model StudentProfile {
   currentStreak   Int       @default(0)
   longestStreak   Int       @default(0)
   totalDays       Int       @default(0)
+  totalMinutes    Int       @default(0)
+  xpForNextLevel  Int       @default(100)
   
   // 관계
   plans           Plan[]

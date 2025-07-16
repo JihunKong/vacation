@@ -61,16 +61,16 @@ export default async function LeaderboardPage() {
     }
   }
 
-  const getRankBadge = (rank: number) => {
+  const getRankBadge = (rank: number): "default" | "secondary" | "destructive" | "outline" => {
     switch (rank) {
       case 1:
-        return "gold"
-      case 2:
-        return "silver"
-      case 3:
-        return "bronze"
-      default:
         return "default"
+      case 2:
+        return "secondary"
+      case 3:
+        return "outline"
+      default:
+        return "outline"
     }
   }
 
@@ -125,7 +125,7 @@ export default async function LeaderboardPage() {
                         <p className="text-sm text-muted-foreground">{student.totalMinutes}분 활동</p>
                       </div>
                       {rank <= 3 && (
-                        <Badge variant={getRankBadge(rank) as any}>
+                        <Badge variant={getRankBadge(rank)}>
                           {rank}위
                         </Badge>
                       )}

@@ -113,9 +113,8 @@ export default async function StatsPage() {
           <CardContent>
             <AvatarDisplay 
               level={studentProfile.level}
-              totalXP={studentProfile.totalXP}
-              xpForNextLevel={studentProfile.xpForNextLevel}
-              avatarImageUrl={studentProfile.avatarImageUrl}
+              experience={studentProfile.experience}
+              requiredXP={studentProfile.xpForNextLevel}
               stats={{
                 strength: studentProfile.strength,
                 intelligence: studentProfile.intelligence,
