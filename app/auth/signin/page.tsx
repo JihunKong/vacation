@@ -92,10 +92,10 @@ export default function SignInPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">
-            🏝️ 여름방학 성장 퀘스트
+            📚 스터디 로그
           </CardTitle>
           <CardDescription className="mt-2 text-lg">
-            2025년 여름방학, 게임처럼 즐기며 성장하세요!
+            매일의 학습을 기록하고 성장하세요!
           </CardDescription>
         </CardHeader>
         <CardContent>

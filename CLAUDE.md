@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a gamified summer vacation planning and tracking system for Wando High School 2nd-year students, running from July 21 to August 17, 2025. The project uses Next.js 14 with TypeScript, PostgreSQL, and integrates gamification elements to encourage self-directed vacation planning.
+This is a gamified study logging and tracking system for students. The project uses Next.js 14 with TypeScript, PostgreSQL, and integrates gamification elements to encourage self-directed learning and consistent study habits.
 
 ## Essential Commands
 
@@ -60,7 +60,7 @@ prisma/
 
 ### Key Architectural Decisions
 
-1. **Authentication Flow**: NextAuth.js with Google provider, restricted to @gwe.go.kr domain
+1. **Authentication Flow**: NextAuth.js with Credentials provider for email/password authentication
 2. **State Management**: Server Components by default, Client Components for interactivity
 3. **Database Operations**: All DB queries through Prisma Client in server components/API routes
 4. **API Design**: RESTful endpoints under /api with consistent error handling
@@ -71,8 +71,7 @@ prisma/
 DATABASE_URL          # Railway PostgreSQL connection
 NEXTAUTH_URL         # App URL (e.g., https://yourdomain.com)
 NEXTAUTH_SECRET      # Random secret for NextAuth
-GOOGLE_CLIENT_ID     # Google OAuth credentials
-GOOGLE_CLIENT_SECRET
+# Google OAuth not used in current version
 OPENAI_API_KEY       # For AI features
 ```
 
@@ -100,4 +99,4 @@ OPENAI_API_KEY       # For AI features
 - **Level System**: Levels 1-100 with exponential XP requirements
 - **Activity Categories**: 학습, 운동, 독서, 취미, 봉사, 기타 (each with different XP multipliers)
 - **Teacher Dashboard**: Requires special role in database, uses OpenAI for activity summaries
-- **Date Handling**: All dates in KST, vacation period hardcoded (2025-07-21 to 2025-08-17)
+- **Date Handling**: All dates in KST

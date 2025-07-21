@@ -44,7 +44,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="text-xl font-bold">
-            🏝️ 여름방학 퀘스트
+            📚 스터디 로그
           </Link>
           
           <nav className="hidden md:flex items-center gap-1">

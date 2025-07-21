@@ -15,10 +15,10 @@ export default async function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="text-center space-y-6 max-w-2xl">
         <h1 className="text-5xl font-bold">
-          🏝️ 완도고등학교 여름방학 성장 퀘스트
+          📚 스터디 로그
         </h1>
         <p className="text-xl text-gray-700">
-          2025년 여름방학, 게임처럼 즐기며 성장하세요!
+          매일의 학습을 게임처럼 즐기며 성장하세요!
         </p>
         <p className="text-lg text-gray-600">
           매일의 활동을 기록하고, 경험치를 획득하며, 나만의 아바타를 성장시켜보세요.
