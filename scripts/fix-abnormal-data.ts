@@ -4,7 +4,19 @@
 import { PrismaClient } from "@prisma/client"
 import { calculateLevel } from "../lib/game/stats"
 
-const prisma = new PrismaClient()
+// DATABASE_URL이 설정되어 있지 않으면 에러
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL이 설정되지 않았습니다.")
+  process.exit(1)
+}
+
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+})
 
 async function fixAbnormalData() {
   console.log("비정상 데이터 수정 시작...")
