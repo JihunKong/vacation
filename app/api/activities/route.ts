@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // 시간 제약 - 하루 최대 24시간(1440분), 한 번에 최대 8시간(480분)
-    if (minutes > 480) {
+    // 시간 제약 - 한 세션 최대 1시간(60분)
+    if (minutes > 60) {
       return NextResponse.json(
-        { error: "Maximum 480 minutes (8 hours) per activity" },
+        { error: "한 번에 최대 60분(1시간)까지만 기록할 수 있습니다. 더 긴 활동은 여러 세션으로 나누어 기록해주세요." },
         { status: 400 }
       )
     }
@@ -57,21 +57,27 @@ export async function POST(req: NextRequest) {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    // 오늘 총 활동 시간 체크
-    const todayActivities = await prisma.activity.aggregate({
+    // 오늘 활동 체크
+    const todayActivities = await prisma.activity.findMany({
       where: {
         studentId: studentProfileId,
         date: today,
       },
-      _sum: {
-        minutes: true,
-      },
     })
 
-    const todayTotalMinutes = todayActivities._sum.minutes || 0
+    // 활동 수 제한 - 하루 최대 30개 활동
+    if (todayActivities.length >= 30) {
+      return NextResponse.json(
+        { error: "하루에 최대 30개의 활동만 기록할 수 있습니다." },
+        { status: 400 }
+      )
+    }
+
+    // 총 시간 체크
+    const todayTotalMinutes = todayActivities.reduce((sum, act) => sum + act.minutes, 0)
     if (todayTotalMinutes + minutes > 1440) {
       return NextResponse.json(
-        { error: `Today's total cannot exceed 1440 minutes (24 hours). Current: ${todayTotalMinutes} minutes` },
+        { error: `하루 총 활동 시간은 24시간을 초과할 수 없습니다. 현재: ${todayTotalMinutes}분` },
         { status: 400 }
       )
     }

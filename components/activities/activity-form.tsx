@@ -97,7 +97,8 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
       })
 
       if (!response.ok) {
-        throw new Error("활동 기록에 실패했습니다")
+        const error = await response.json()
+        throw new Error(error.error || "활동 기록에 실패했습니다")
       }
 
       setEarnedXP(xp)
@@ -117,7 +118,8 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
       }, 3000)
     } catch (error) {
       console.error("Error recording activity:", error)
-      alert("활동 기록에 실패했습니다. 다시 시도해주세요.")
+      const errorMessage = error instanceof Error ? error.message : "활동 기록에 실패했습니다"
+      alert(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -197,11 +199,15 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
               id="minutes"
               type="number"
               min="10"
+              max="60"
               step="10"
               value={formData.minutes}
               onChange={(e) => setFormData({ ...formData, minutes: e.target.value })}
               required
             />
+            <p className="text-sm text-muted-foreground mt-1">
+              10분 ~ 60분 (1시간 이상은 여러 세션으로 나누어 기록해주세요)
+            </p>
           </div>
 
           <div>
