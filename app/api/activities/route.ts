@@ -24,6 +24,22 @@ export async function POST(req: NextRequest) {
       statPoints,
     } = await req.json()
 
+    // 입력값 검증
+    if (!title || !category || !minutes || minutes <= 0) {
+      return NextResponse.json(
+        { error: "Invalid input: title, category, and positive minutes are required" },
+        { status: 400 }
+      )
+    }
+
+    // 시간 제약 - 하루 최대 24시간(1440분), 한 번에 최대 8시간(480분)
+    if (minutes > 480) {
+      return NextResponse.json(
+        { error: "Maximum 480 minutes (8 hours) per activity" },
+        { status: 400 }
+      )
+    }
+
     // 권한 확인
     const studentProfile = await prisma.studentProfile.findUnique({
       where: { id: studentProfileId },
@@ -40,6 +56,25 @@ export async function POST(req: NextRequest) {
     // 오늘 날짜
     const today = new Date()
     today.setHours(0, 0, 0, 0)
+
+    // 오늘 총 활동 시간 체크
+    const todayActivities = await prisma.activity.aggregate({
+      where: {
+        studentId: studentProfileId,
+        date: today,
+      },
+      _sum: {
+        minutes: true,
+      },
+    })
+
+    const todayTotalMinutes = todayActivities._sum.minutes || 0
+    if (todayTotalMinutes + minutes > 1440) {
+      return NextResponse.json(
+        { error: `Today's total cannot exceed 1440 minutes (24 hours). Current: ${todayTotalMinutes} minutes` },
+        { status: 400 }
+      )
+    }
 
     // 트랜잭션으로 처리
     const result = await prisma.$transaction(async (tx) => {
@@ -113,7 +148,6 @@ export async function POST(req: NextRequest) {
         where: { id: studentProfileId },
         data: {
           totalXP: { increment: xpEarned },
-          experience: { increment: xpEarned },
           totalMinutes: { increment: minutes },
           strength: { increment: statPoints.strength || 0 },
           intelligence: { increment: statPoints.intelligence || 0 },
@@ -124,14 +158,18 @@ export async function POST(req: NextRequest) {
         },
       })
 
-      // 레벨업 확인
-      const { level, requiredXP } = calculateLevel(updatedProfile.totalXP)
-      if (level > updatedProfile.level) {
+      // 레벨업 확인 및 experience 업데이트
+      const { level, currentXP, requiredXP } = calculateLevel(updatedProfile.totalXP)
+      const needsUpdate = level !== updatedProfile.level || 
+                         currentXP !== updatedProfile.experience ||
+                         requiredXP !== updatedProfile.xpForNextLevel
+      
+      if (needsUpdate) {
         await tx.studentProfile.update({
           where: { id: studentProfileId },
           data: {
             level,
-            experience: 0, // 레벨업 시 경험치 초기화
+            experience: currentXP, // 현재 레벨에서의 진행도
             xpForNextLevel: requiredXP,
           },
         })

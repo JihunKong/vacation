@@ -19,6 +19,11 @@ interface AvatarDisplayProps {
 
 export function AvatarDisplay({ level, experience, requiredXP, stats }: AvatarDisplayProps) {
   const xpProgress = (experience / requiredXP) * 100
+  
+  // 능력치 최대값 계산 - 모든 능력치 중 최고값을 기준으로 스케일링
+  const maxStatValue = Math.max(...Object.values(stats))
+  // 최소 100, 최대값의 125%를 상한선으로 설정 (여유공간 확보)
+  const statScale = Math.max(100, Math.ceil(maxStatValue * 1.25 / 50) * 50)
 
   return (
     <Card>
@@ -43,6 +48,7 @@ export function AvatarDisplay({ level, experience, requiredXP, stats }: AvatarDi
           {(Object.keys(stats) as StatType[]).map((stat) => {
             const { name, icon } = STAT_DESCRIPTIONS[stat]
             const value = stats[stat]
+            const percentage = (value / statScale) * 100
             
             return (
               <div key={stat} className="space-y-1">
@@ -51,10 +57,17 @@ export function AvatarDisplay({ level, experience, requiredXP, stats }: AvatarDi
                     <span className="text-lg">{icon}</span>
                     <span>{name}</span>
                   </span>
-                  <span className="font-bold">{value}</span>
+                  <span className="font-bold">
+                    {value}
+                    {statScale > 100 && (
+                      <span className="text-xs text-muted-foreground ml-1">
+                        / {statScale}
+                      </span>
+                    )}
+                  </span>
                 </div>
                 <Progress 
-                  value={Math.min(value, 100)} 
+                  value={percentage} 
                   className="h-2"
                   indicatorClassName={getStatColor(stat)}
                 />
