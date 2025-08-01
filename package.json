@@ -12,7 +12,8 @@
     "db:check": "node scripts/check-tables.js",
     "db:update-minutes": "node scripts/update-total-minutes.js",
     "db:fix-data": "npx tsx scripts/fix-abnormal-data.ts",
-    "db:fix-sessions": "npx tsx scripts/fix-session-limit.ts"
+    "db:fix-sessions": "npx tsx scripts/fix-session-limit.ts",
+    "db:cap-60": "npx tsx scripts/cap-sessions-to-60.ts"
   },
   "repository": {
     "type": "git",
