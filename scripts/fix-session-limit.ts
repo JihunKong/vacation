@@ -81,7 +81,7 @@ async function fixSessionLimit() {
             minutes: sessionMinutes,
             date: activity.date,
             xpEarned: sessionXP,
-            statPoints: activity.statPoints,
+            statPoints: activity.statPoints as any, // Type assertion for JsonValue
           }
         })
       }
