@@ -4,16 +4,6 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import OpenAI from "openai"
 
-const apiKey = process.env.UPSTAGE_API_KEY
-if (!apiKey) {
-  console.error("UPSTAGE_API_KEY is not set")
-}
-
-const openai = new OpenAI({
-  apiKey: apiKey || "",
-  baseURL: "https://api.upstage.ai/v1"
-})
-
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -22,6 +12,25 @@ export async function POST(req: NextRequest) {
     }
 
     const { studentData } = await req.json()
+    
+    const apiKey = process.env.UPSTAGE_API_KEY
+    if (!apiKey) {
+      console.warn("UPSTAGE_API_KEY is not set, using fallback messages")
+      const defaultMessages = [
+        "오늘도 성장하는 하루 되세요! 🌟",
+        "당신의 노력이 빛을 발하고 있어요! 💫",
+        "한 걸음씩 나아가는 당신이 멋져요! 🚀",
+        "오늘의 작은 성취가 내일의 큰 성공이 됩니다! 🎯",
+        "꾸준함이 만드는 기적을 믿어요! ✨"
+      ]
+      const randomMessage = defaultMessages[Math.floor(Math.random() * defaultMessages.length)]
+      return NextResponse.json({ message: randomMessage })
+    }
+
+    const openai = new OpenAI({
+      apiKey: apiKey,
+      baseURL: "https://api.upstage.ai/v1"
+    })
 
     // 학생 데이터에서 필요한 정보 추출
     const {
