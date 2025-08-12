@@ -13,7 +13,8 @@
     "db:update-minutes": "node scripts/update-total-minutes.js",
     "db:fix-data": "npx tsx scripts/fix-abnormal-data.ts",
     "db:fix-sessions": "npx tsx scripts/fix-session-limit.ts",
-    "db:cap-60": "npx tsx scripts/cap-sessions-to-60.ts"
+    "db:cap-60": "npx tsx scripts/cap-sessions-to-60.ts",
+    "screenshot": "npx tsx competition-docs/capture-screenshots.ts"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,7 @@
     "lucide-react": "^0.525.0",
     "next": "^15.4.1",
     "next-auth": "^4.24.11",
+    "openai": "^5.12.2",
     "prisma": "^6.12.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -52,6 +54,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@types/node": "^24.0.14",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
