@@ -1,28 +1,29 @@
 import type { Metadata } from 'next'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '스터디 로그 - 게이미피케이션 학습 관리 시스템',
+  title: '성장닷컴 - 게이미피케이션 학습 관리 시스템',
   description: '매일의 학습을 기록하고 게임처럼 즐기며 성장하는 학습 관리 플랫폼',
-  keywords: '학습 관리, 스터디 로그, 게이미피케이션, 학습 기록, 아바타 성장',
-  authors: [{ name: 'Study Log Team' }],
-  creator: 'Study Log',
-  publisher: 'Study Log',
+  keywords: '학습 관리, 성장닷컴, 게이미피케이션, 학습 기록, 아바타 성장',
+  authors: [{ name: '성장닷컴 Team' }],
+  creator: '성장닷컴',
+  publisher: '성장닷컴',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
   openGraph: {
-    title: '스터디 로그',
+    title: '성장닷컴',
     description: '매일의 학습을 기록하고 게임처럼 즐기며 성장하세요!',
     type: 'website',
     locale: 'ko_KR',
-    siteName: '스터디 로그',
+    siteName: '성장닷컴',
   },
   twitter: {
     card: 'summary_large_image',
-    title: '스터디 로그',
+    title: '성장닷컴',
     description: '매일의 학습을 기록하고 게임처럼 즐기며 성장하세요!',
   },
   viewport: {
@@ -40,7 +41,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster richColors position="top-right" />
+      </body>
     </html>
   )
 }

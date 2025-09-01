@@ -14,6 +14,7 @@
     "db:fix-data": "npx tsx scripts/fix-abnormal-data.ts",
     "db:fix-sessions": "npx tsx scripts/fix-session-limit.ts",
     "db:cap-60": "npx tsx scripts/cap-sessions-to-60.ts",
+    "db:fix-pomodoro": "npx tsx scripts/fix-stuck-pomodoro-sessions.ts",
     "screenshot": "npx tsx competition-docs/capture-screenshots.ts"
   },
   "repository": {
@@ -30,6 +31,7 @@
   "description": "",
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
+    "@next-auth/prisma-adapter": "^1.0.7",
     "@prisma/client": "^6.12.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-label": "^2.1.7",
@@ -42,6 +44,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.12",
+    "ioredis": "^5.7.0",
     "lucide-react": "^0.525.0",
     "next": "^15.4.1",
     "next-auth": "^4.24.11",
@@ -49,6 +53,8 @@
     "prisma": "^6.12.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "recharts": "^3.1.2",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7"

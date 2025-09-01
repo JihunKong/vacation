@@ -11,7 +11,8 @@ import {
   BarChart, 
   LogOut,
   Settings,
-  Users
+  Users,
+  Clock
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -28,6 +29,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
 
   const navItems = [
     { href: "/dashboard", label: "홈", icon: Home },
+    { href: "/dashboard/timer", label: "타이머", icon: Clock },
     { href: "/dashboard/plan", label: "일일 계획", icon: Calendar },
     { href: "/dashboard/activities", label: "활동 기록", icon: Trophy },
     { href: "/dashboard/stats", label: "통계", icon: BarChart },
@@ -44,7 +46,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="text-xl font-bold">
-            📚 스터디 로그
+            🌱 성장닷컴
           </Link>
           
           <nav className="hidden md:flex items-center gap-1">

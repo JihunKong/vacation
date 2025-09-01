@@ -68,6 +68,18 @@ model StudentProfile {
   activities      Activity[]
   badges          Badge[]
   summaries       Summary[]
+  pomodoroSessions PomodoroSession[]
+  
+  // 친구 관계
+  sentFriendRequests     Friendship[] @relation("FriendshipRequester")
+  receivedFriendRequests Friendship[] @relation("FriendshipReceiver")
+  
+  // 그룹 관계
+  createdGroups   StudyGroup[] @relation("CreatedGroups")
+  groupMemberships GroupMember[]
+  challengeParticipations ChallengeParticipant[]
+  studyRoomParticipations StudyRoomParticipant[]
+  leaderboardEntries LeaderboardEntry[]
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -137,6 +149,9 @@ model Activity {
   xpEarned        Int
   statPoints      Json      // { strength: 0, intelligence: 0, ... }
   
+  // 뽀모도로 세션에서 생성된 경우
+  pomodoroSession PomodoroSession?
+  
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
@@ -189,4 +204,209 @@ enum SummaryPeriod {
   WEEKLY
   MONTHLY
   FULL
+}
+
+// 뽀모도로 세션
+model PomodoroSession {
+  id              String    @id @default(cuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  category        Category
+  title           String?
+  
+  startTime       DateTime
+  endTime         DateTime?
+  targetMinutes   Int       @default(25)  // 기본 25분
+  actualMinutes   Int?
+  
+  isBreak         Boolean   @default(false)
+  isCompleted     Boolean   @default(false)
+  
+  // 완료시 자동 생성된 활동
+  activityId      String?   @unique
+  activity        Activity? @relation(fields: [activityId], references: [id])
+  
+  // 보너스 XP (연속 완료 등)
+  bonusXP         Int       @default(0)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 친구 관계
+model Friendship {
+  id              String    @id @default(cuid())
+  
+  requesterId     String
+  requester       StudentProfile @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  
+  receiverId      String
+  receiver        StudentProfile @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  status          FriendshipStatus @default(PENDING)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([requesterId, receiverId])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+// 스터디 그룹
+model StudyGroup {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  imageUrl        String?
+  
+  creatorId       String
+  creator         StudentProfile @relation("CreatedGroups", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  maxMembers      Int       @default(8)
+  isPublic        Boolean   @default(true)
+  
+  members         GroupMember[]
+  challenges      GroupChallenge[]
+  studyRooms      StudyRoom[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 그룹 멤버
+model GroupMember {
+  id              String    @id @default(cuid())
+  
+  groupId         String
+  group           StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  role            GroupRole @default(MEMBER)
+  joinedAt        DateTime  @default(now())
+  
+  @@unique([groupId, studentId])
+}
+
+enum GroupRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+// 그룹 챌린지
+model GroupChallenge {
+  id              String    @id @default(cuid())
+  groupId         String
+  group           StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?
+  category        Category?
+  
+  targetMinutes   Int       // 목표 시간 (분)
+  targetDate      DateTime  @db.Date
+  
+  rewardXP        Int       @default(100)
+  
+  isCompleted     Boolean   @default(false)
+  completedAt     DateTime?
+  
+  participants    ChallengeParticipant[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 챌린지 참가자
+model ChallengeParticipant {
+  id              String    @id @default(cuid())
+  
+  challengeId     String
+  challenge       GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  minutesCompleted Int      @default(0)
+  isCompleted     Boolean   @default(false)
+  completedAt     DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([challengeId, studentId])
+}
+
+// 가상 스터디룸 (동시 학습)
+model StudyRoom {
+  id              String    @id @default(cuid())
+  groupId         String
+  group           StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  
+  name            String
+  description     String?
+  
+  isActive        Boolean   @default(true)
+  maxParticipants Int       @default(10)
+  
+  // 현재 활성 참가자
+  participants    StudyRoomParticipant[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 스터디룸 참가자
+model StudyRoomParticipant {
+  id              String    @id @default(cuid())
+  
+  roomId          String
+  room            StudyRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  joinedAt        DateTime  @default(now())
+  leftAt          DateTime?
+  
+  // 현재 뽀모도로 세션
+  currentSessionId String?
+  
+  @@unique([roomId, studentId])
+}
+
+// 리더보드 엔트리 (Redis와 동기화)
+model LeaderboardEntry {
+  id              String    @id @default(cuid())
+  
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  period          LeaderboardPeriod
+  category        Category?  // null이면 전체
+  
+  score           Int
+  rank            Int
+  
+  date            DateTime  @db.Date  // 해당 기간의 날짜
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([studentId, period, category, date])
+  @@index([period, category, date, rank])
+}
+
+enum LeaderboardPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
 }

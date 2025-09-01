@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { DashboardStats } from "@/components/dashboard/dashboard-stats"
 import { AvatarDisplay } from "@/components/avatar/avatar-display"
+import GrowthCharts from "@/components/features/GrowthCharts"
 import { BarChart, Calendar, Trophy, TrendingUp } from "lucide-react"
 
 export default async function StatsPage() {
@@ -167,6 +168,11 @@ export default async function StatsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* 성장 그래프 */}
+      <div className="mt-8">
+        <GrowthCharts />
+      </div>
     </div>
   )
 }

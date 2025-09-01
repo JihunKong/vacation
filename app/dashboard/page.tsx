@@ -7,6 +7,7 @@ import { DashboardStats } from "@/components/dashboard/dashboard-stats"
 import { RecentActivities } from "@/components/dashboard/recent-activities"
 import { TodayPlan } from "@/components/dashboard/today-plan"
 import { AIMessage } from "@/components/dashboard/ai-message"
+import AchievementTracker from "@/components/features/AchievementTracker"
 import { calculateLevel } from "@/lib/game/stats"
 
 export default async function DashboardPage() {
@@ -112,6 +113,9 @@ export default async function DashboardPage() {
 
           {/* 오늘의 계획 */}
           <TodayPlan plan={todayPlan} />
+
+          {/* 성취도 추적 */}
+          <AchievementTracker />
 
           {/* 최근 활동 */}
           <RecentActivities activities={studentProfile.activities} />
