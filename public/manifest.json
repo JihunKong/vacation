@@ -1,6 +1,6 @@
 {
-  "name": "스터디 로그",
-  "short_name": "스터디로그",
+  "name": "성장닷컴",
+  "short_name": "성장닷컴",
   "description": "매일의 학습을 기록하고 게임처럼 즐기며 성장하는 학습 관리 플랫폼",
   "start_url": "/",
   "display": "standalone",
