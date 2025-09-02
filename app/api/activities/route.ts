@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { calculateLevel } from "@/lib/game/stats"
+import { calculateLevel, calculateStatIncreaseWithLimit, getXPRangeForLevel, CATEGORY_STAT_MAP, CATEGORY_DAILY_LIMIT } from "@/lib/game/stats"
 import { BADGE_CRITERIA, BadgeCheckData } from "@/lib/game/badges"
 import { Category } from "@prisma/client"
 
@@ -20,8 +20,6 @@ export async function POST(req: NextRequest) {
       category,
       minutes,
       planItemId,
-      xpEarned,
-      statPoints,
     } = await req.json()
 
     // 입력값 검증
@@ -64,6 +62,11 @@ export async function POST(req: NextRequest) {
         date: today,
       },
     })
+    
+    // 오늘 카테고리별 총 시간 계산
+    const todayMinutesInCategory = todayActivities
+      .filter(act => act.category === category)
+      .reduce((sum, act) => sum + act.minutes, 0)
 
     // 활동 수 제한 - 하루 최대 30개 활동
     if (todayActivities.length >= 30) {
@@ -82,6 +85,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // XP와 능력치 계산 (일일 제한 적용)
+    const hasStreak = studentProfile.currentStreak > 0
+    const { xp: xpEarned, statPoints } = calculateStatIncreaseWithLimit(
+      minutes,
+      category as Category,
+      todayMinutesInCategory,
+      hasStreak
+    )
+    
     // 트랜잭션으로 처리
     const result = await prisma.$transaction(async (tx) => {
       // 활동 기록 생성
@@ -149,6 +161,9 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // 오늘 첫 활동인지 확인 (todayActivities가 비어있으면 첫 활동)
+      const isFirstActivityToday = todayActivities.length === 0
+      
       // 능력치 업데이트
       const updatedProfile = await tx.studentProfile.update({
         where: { id: studentProfileId },
@@ -160,25 +175,99 @@ export async function POST(req: NextRequest) {
           dexterity: { increment: statPoints.dexterity || 0 },
           charisma: { increment: statPoints.charisma || 0 },
           vitality: { increment: statPoints.vitality || 0 },
-          totalDays: { increment: 1 },
+          totalDays: { increment: isFirstActivityToday ? 1 : 0 },  // 첫 활동일 때만 증가
         },
       })
 
       // 레벨업 확인 및 experience 업데이트
       const { level, currentXP, requiredXP } = calculateLevel(updatedProfile.totalXP)
+      const previousLevel = updatedProfile.level
       const needsUpdate = level !== updatedProfile.level || 
                          currentXP !== updatedProfile.experience ||
                          requiredXP !== updatedProfile.xpForNextLevel
       
       if (needsUpdate) {
+        // 레벨업 시 자동 능력치 증가
+        let autoStatIncrease = {
+          strength: 0,
+          intelligence: 0,
+          dexterity: 0,
+          charisma: 0,
+          vitality: 0,
+        }
+        
+        if (level > previousLevel) {
+          // 이전 레벨의 XP 범위 계산
+          const { minXP, maxXP } = getXPRangeForLevel(previousLevel)
+          
+          // 해당 범위의 활동들 조회
+          const levelActivities = await tx.activity.findMany({
+            where: {
+              studentId: studentProfileId,
+              xpEarned: {
+                gt: 0
+              }
+            },
+            orderBy: {
+              createdAt: 'asc'
+            }
+          })
+          
+          // 누적 XP로 해당 레벨 범위의 활동 필터링
+          let cumulativeXP = 0
+          const activitiesInLevelRange: Category[] = []
+          
+          for (const act of levelActivities) {
+            if (cumulativeXP >= minXP && cumulativeXP < maxXP) {
+              activitiesInLevelRange.push(act.category)
+            }
+            cumulativeXP += act.xpEarned
+            if (cumulativeXP >= maxXP) break
+          }
+          
+          // 활동한 카테고리별로 능력치 1씩 증가
+          const uniqueCategories = [...new Set(activitiesInLevelRange)]
+          for (const cat of uniqueCategories) {
+            const stat = CATEGORY_STAT_MAP[cat]
+            autoStatIncrease[stat] += 1
+          }
+        }
+        
         await tx.studentProfile.update({
           where: { id: studentProfileId },
           data: {
             level,
             experience: currentXP, // 현재 레벨에서의 진행도
             xpForNextLevel: requiredXP,
+            // 레벨업 시 자동 능력치 증가 적용
+            strength: { increment: autoStatIncrease.strength },
+            intelligence: { increment: autoStatIncrease.intelligence },
+            dexterity: { increment: autoStatIncrease.dexterity },
+            charisma: { increment: autoStatIncrease.charisma },
+            vitality: { increment: autoStatIncrease.vitality },
           },
         })
+        
+        // 레벨업 시 10의 배수 체크 및 이미지 생성 트리거
+        if (level > previousLevel) {
+          const milestones = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+          for (const milestone of milestones) {
+            if (level >= milestone && previousLevel < milestone) {
+              // 비동기로 이미지 생성 요청 (응답 대기하지 않음)
+              fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/level-image/generate`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cookie': req.headers.get('cookie') || ''
+                },
+                body: JSON.stringify({ level: milestone })
+              }).catch(error => {
+                console.error(`Failed to trigger level image generation for level ${milestone}:`, error)
+              })
+              break
+            }
+          }
+        }
       }
 
       // 배지 획득 확인
@@ -230,7 +319,16 @@ export async function POST(req: NextRequest) {
         })
       }
 
-      return { activity, newBadges: newBadges.length }
+      return { 
+        activity, 
+        newBadges: newBadges.length,
+        dailyLimit: {
+          category,
+          todayMinutes: todayMinutesInCategory + minutes,
+          limit: CATEGORY_DAILY_LIMIT[category as Category],
+          isLimitReached: todayMinutesInCategory + minutes >= CATEGORY_DAILY_LIMIT[category as Category]
+        }
+      }
     })
 
     return NextResponse.json(result)

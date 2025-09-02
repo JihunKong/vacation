@@ -57,6 +57,16 @@ export default async function DashboardPage() {
 
   // 레벨 계산
   const { level, currentXP, requiredXP } = calculateLevel(studentProfile.totalXP)
+  
+  // 실제 활동 일수 계산 (중복 없는 날짜 수)
+  const uniqueActivityDates = await prisma.activity.groupBy({
+    by: ['date'],
+    where: {
+      studentId: studentProfile.id
+    },
+    _count: true
+  })
+  const actualTotalDays = uniqueActivityDates.length
 
   // 최근 활동 제목 (AI 메시지용)
   const recentActivity = studentProfile.activities[0]?.title
@@ -105,7 +115,7 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* 통계 카드 */}
           <DashboardStats
-            totalDays={studentProfile.totalDays}
+            totalDays={actualTotalDays}
             currentStreak={studentProfile.currentStreak}
             totalXP={studentProfile.totalXP}
             badgeCount={studentProfile.badges.length}

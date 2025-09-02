@@ -103,13 +103,27 @@ export async function GET(req: NextRequest) {
       color: getCategoryColor(category)
     }))
 
-    // 시간대별 히트맵 데이터
+    // 시간대별 히트맵 데이터 (KST 기준)
     const hourlyHeatmap = []
     for (let day = 0; day < 7; day++) {
       for (let hour = 0; hour < 24; hour++) {
         const count = activities.filter(a => {
+          // createdAt을 사용하며, 서버가 UTC로 저장하므로 KST로 변환
           const date = new Date(a.createdAt)
-          return date.getDay() === day && date.getHours() === hour
+          // 서버 시간이 UTC인 경우 KST로 변환 (UTC + 9시간)
+          const kstHours = date.getUTCHours() + 9
+          const kstDay = date.getUTCDay()
+          
+          // 시간이 24를 넘으면 다음 날로
+          let adjustedHour = kstHours
+          let adjustedDay = kstDay
+          
+          if (kstHours >= 24) {
+            adjustedHour = kstHours - 24
+            adjustedDay = (kstDay + 1) % 7
+          }
+          
+          return adjustedDay === day && adjustedHour === hour
         }).length
         
         hourlyHeatmap.push({

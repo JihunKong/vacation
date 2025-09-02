@@ -12,7 +12,8 @@ import {
   LogOut,
   Settings,
   Users,
-  Clock
+  Clock,
+  Image
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -34,6 +35,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
     { href: "/dashboard/activities", label: "활동 기록", icon: Trophy },
     { href: "/dashboard/stats", label: "통계", icon: BarChart },
     { href: "/dashboard/leaderboard", label: "리더보드", icon: Users },
+    { href: "/gallery", label: "갤러리", icon: Image },
   ]
 
   // 교사 메뉴 추가
