@@ -295,16 +295,6 @@ export default function TermsPage() {
             <p>이 약관은 2025년 8월 1일부터 시행합니다.</p>
           </section>
 
-          <div className="mt-12 pt-8 border-t">
-            <div className="flex justify-between items-center">
-              <Link href="/privacy" className="text-blue-600 hover:underline">
-                ← 개인정보처리방침 보기
-              </Link>
-              <Link href="/" className="text-blue-600 hover:underline">
-                홈으로 돌아가기 →
-              </Link>
-            </div>
-          </div>
         </div>
       </main>
     </div>
