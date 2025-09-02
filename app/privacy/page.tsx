@@ -171,16 +171,6 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <div className="mt-12 pt-8 border-t">
-            <div className="flex justify-between items-center">
-              <Link href="/" className="text-blue-600 hover:underline">
-                ← 홈으로 돌아가기
-              </Link>
-              <Link href="/terms" className="text-blue-600 hover:underline">
-                서비스 이용약관 보기 →
-              </Link>
-            </div>
-          </div>
         </div>
       </main>
     </div>
