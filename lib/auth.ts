@@ -109,7 +109,15 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
+      // Allow all sign-ins to proceed
+      // User creation/linking will be handled in jwt callback
+      console.log("SignIn attempt:", { 
+        provider: account?.provider, 
+        email: user?.email,
+        profile: profile
+      })
+      
       if (account?.provider === "google") {
         try {
           // Check if user exists
@@ -120,6 +128,7 @@ export const authOptions: NextAuthOptions = {
           
           // Create user if doesn't exist
           if (!dbUser) {
+            console.log("Creating new user for:", user.email)
             dbUser = await prisma.user.create({
               data: {
                 email: user.email!,
@@ -131,17 +140,25 @@ export const authOptions: NextAuthOptions = {
               },
               include: { studentProfile: true }
             })
+            console.log("User created successfully:", dbUser.id)
           } else if (!dbUser.studentProfile) {
             // Create profile if missing
+            console.log("Creating profile for existing user:", dbUser.id)
             await prisma.studentProfile.create({
               data: { userId: dbUser.id }
             })
           }
+          
+          // Explicitly return true for successful Google sign-in
+          return true
         } catch (error) {
           console.error("Error in signIn callback:", error)
-          return false
+          // Return string error message for better debugging
+          return `/auth/error?error=DatabaseError`
         }
       }
+      
+      // Allow credentials sign-in
       return true
     }
   },
