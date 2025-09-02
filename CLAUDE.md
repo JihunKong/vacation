@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ CRITICAL: Database Policy
+
+**NEVER USE RAILWAY FOR DATABASE**
+- Always use Docker PostgreSQL running locally on the server
+- DATABASE_URL should always be: `postgresql://postgres:postgres@localhost:5432/studylog_db`
+- Docker containers: `studylog_postgres` (PostgreSQL) and `studylog_redis` (Redis)
+- PM2 is used for process management, NOT Railway
+
 ## Project Overview
 
 This is a gamified study logging and tracking system for students. The project uses Next.js 14 with TypeScript, PostgreSQL, and integrates gamification elements to encourage self-directed learning and consistent study habits.
@@ -29,12 +37,13 @@ npm run lint       # Run Next.js linter
 
 ### Tech Stack
 - **Framework**: Next.js 14 (App Router)
-- **Database**: PostgreSQL via Railway
+- **Database**: PostgreSQL via Docker (⚠️ NEVER use Railway - Always use Docker PostgreSQL)
 - **ORM**: Prisma
 - **Auth**: NextAuth.js with Google OAuth
 - **UI**: Tailwind CSS + shadcn/ui components
 - **Animations**: Framer Motion
 - **AI**: OpenAI API integration
+- **Session Management**: Redis via Docker (with memory fallback)
 
 ### Project Structure
 ```
@@ -68,11 +77,13 @@ prisma/
 
 ### Environment Variables Required
 ```
-DATABASE_URL          # Railway PostgreSQL connection
-NEXTAUTH_URL         # App URL (e.g., https://yourdomain.com)
+DATABASE_URL          # Docker PostgreSQL (postgresql://postgres:postgres@localhost:5432/studylog_db)
+NEXTAUTH_URL         # App URL (e.g., https://xn--oj4b21j.com)
 NEXTAUTH_SECRET      # Random secret for NextAuth
-# Google OAuth not used in current version
-OPENAI_API_KEY       # For AI features
+GOOGLE_CLIENT_ID     # Google OAuth Client ID
+GOOGLE_CLIENT_SECRET # Google OAuth Client Secret
+OPENAI_API_KEY       # For AI features (optional)
+REDIS_URL            # Redis connection (optional, falls back to memory)
 ```
 
 ### Development Workflow
