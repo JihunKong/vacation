@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Category, Plan, PlanItem } from "@prisma/client"
-import { calculateStatIncrease } from "@/lib/game/stats"
 import { Sparkles } from "lucide-react"
 
 interface ActivityFormProps {
@@ -32,6 +31,7 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
   const [isLoading, setIsLoading] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [earnedXP, setEarnedXP] = useState(0)
+  const [limitReached, setLimitReached] = useState(false)
   
   const [formData, setFormData] = useState<{
     title: string
@@ -78,8 +78,6 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
 
     try {
       const minutes = parseInt(formData.minutes)
-      const hasStreak = currentStreak > 0
-      const { xp, statPoints } = calculateStatIncrease(minutes, formData.category, hasStreak)
 
       const response = await fetch("/api/activities", {
         method: "POST",
@@ -91,8 +89,6 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
           category: formData.category,
           minutes,
           planItemId: formData.planItemId || undefined,
-          xpEarned: xp,
-          statPoints,
         }),
       })
 
@@ -100,8 +96,10 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
         const error = await response.json()
         throw new Error(error.error || "활동 기록에 실패했습니다")
       }
-
-      setEarnedXP(xp)
+      
+      const result = await response.json()
+      setEarnedXP(result.activity.xpEarned)
+      setLimitReached(result.dailyLimit?.isLimitReached || false)
       setShowResult(true)
       
       // 3초 후 초기화
@@ -133,11 +131,19 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
         <div className="text-center py-8 space-y-4">
           <Sparkles className="h-16 w-16 text-yellow-500 mx-auto animate-pulse" />
           <h3 className="text-2xl font-bold">
-            +{earnedXP} XP 획득!
+            +{earnedXP} XP 획듍!
           </h3>
           <p className="text-gray-600">
             활동이 성공적으로 기록되었습니다
           </p>
+          {limitReached && (
+            <Alert className="mt-4">
+              <AlertDescription className="text-orange-600">
+                ⚠️ 이 카테고리의 일일 제한에 도달했습니다! 
+                추가 활동 시 10 XP만 획듍합니다.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">

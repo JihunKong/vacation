@@ -9,11 +9,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Checkbox } from "@/components/ui/checkbox"
+import Link from "next/link"
 
 export default function SignInPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -65,11 +69,24 @@ export default function SignInPage() {
     const password = formData.get("password") as string
     const name = formData.get("name") as string
 
+    // 동의 체크
+    if (!termsAccepted || !privacyAccepted) {
+      setError("서비스 이용약관과 개인정보처리방침에 동의해주세요.")
+      setIsLoading(false)
+      return
+    }
+
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          name, 
+          termsAccepted: true,
+          privacyAccepted: true 
+        }),
       })
 
       if (!response.ok) {
@@ -222,12 +239,49 @@ export default function SignInPage() {
                     최소 6자 이상 입력해주세요
                   </p>
                 </div>
+                
+                <div className="space-y-3 border-t pt-4">
+                  <div className="flex items-start space-x-2">
+                    <Checkbox 
+                      id="terms" 
+                      checked={termsAccepted}
+                      onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor="terms" className="text-sm font-normal cursor-pointer">
+                        <Link href="/terms" target="_blank" className="text-blue-600 hover:underline">
+                          서비스 이용약관
+                        </Link>
+                        에 동의합니다 (필수)
+                      </Label>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-2">
+                    <Checkbox 
+                      id="privacy" 
+                      checked={privacyAccepted}
+                      onCheckedChange={(checked) => setPrivacyAccepted(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor="privacy" className="text-sm font-normal cursor-pointer">
+                        <Link href="/privacy" target="_blank" className="text-blue-600 hover:underline">
+                          개인정보처리방침
+                        </Link>
+                        에 동의합니다 (필수)
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+                
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || !termsAccepted || !privacyAccepted}>
                   {isLoading ? "가입 중..." : "회원가입"}
                 </Button>
               </form>

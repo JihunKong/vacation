@@ -4,12 +4,20 @@ import { prisma } from "@/lib/db"
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name } = await req.json()
+    const { email, password, name, termsAccepted, privacyAccepted } = await req.json()
 
     // 입력값 검증
     if (!email || !password || !name) {
       return NextResponse.json(
         { error: "모든 필드를 입력해주세요." },
+        { status: 400 }
+      )
+    }
+    
+    // 약관 동의 확인
+    if (!termsAccepted || !privacyAccepted) {
+      return NextResponse.json(
+        { error: "서비스 이용약관과 개인정보처리방침에 동의해주세요." },
         { status: 400 }
       )
     }
@@ -36,12 +44,15 @@ export async function POST(req: NextRequest) {
     // 비밀번호 해시
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // 사용자 생성
+    // 사용자 생성 (동의 시간 포함)
+    const now = new Date()
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
+        termsAcceptedAt: now,
+        privacyAcceptedAt: now,
       },
     })
 

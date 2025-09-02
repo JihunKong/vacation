@@ -23,11 +23,18 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
+  // 약관 동의 정보
+  termsAcceptedAt    DateTime?  // 서비스 이용약관 동의 시간
+  privacyAcceptedAt  DateTime?  // 개인정보처리방침 동의 시간
+  
   // 학생 프로필
   studentProfile StudentProfile?
   
   // 교사가 작성한 요약
   teacherSummaries Summary[] @relation("TeacherSummaries")
+  
+  // 좋아요한 레벨 이미지들
+  likedLevelImages LevelImageLike[]
 }
 
 // 역할 열거형
@@ -67,6 +74,7 @@ model StudentProfile {
   plans           Plan[]
   activities      Activity[]
   badges          Badge[]
+  userAchievements UserAchievement[]
   summaries       Summary[]
   pomodoroSessions PomodoroSession[]
   
@@ -80,6 +88,9 @@ model StudentProfile {
   challengeParticipations ChallengeParticipant[]
   studyRoomParticipations StudyRoomParticipant[]
   leaderboardEntries LeaderboardEntry[]
+  
+  // 레벨 이미지
+  levelImages     LevelImage[]
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -177,6 +188,75 @@ enum BadgeType {
   VOLUNTEER_HERO   // 봉사왕
   STREAK_KEEPER    // 연속 달성
   LEVEL_MILESTONE  // 레벨 달성
+}
+
+// 도전과제 정의
+model Achievement {
+  id              String    @id @default(cuid())
+  code            String    @unique // 고유 식별자 (예: "first_activity", "week_warrior")
+  title           String
+  description     String
+  icon            String
+  category        AchievementCategory
+  difficulty      AchievementDifficulty
+  xpReward        Int
+  target          Int
+  
+  // 월별 도전과제 관련
+  isMonthly       Boolean   @default(false)
+  activeMonth     Int?      // 1-12, null이면 항상 활성
+  
+  // 통계 추적용
+  checkType       String    // "totalActivities", "consecutiveDays", "studyHours" 등
+  checkCondition  Json?     // 추가 조건 (예: { category: "STUDY", timeRange: "morning" })
+  
+  // 사용자별 진행 상황
+  userAchievements UserAchievement[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// 사용자별 도전과제 진행 상황
+model UserAchievement {
+  id              String    @id @default(cuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  achievementId   String
+  achievement     Achievement @relation(fields: [achievementId], references: [id])
+  
+  progress        Int       @default(0)
+  completed       Boolean   @default(false)
+  completedAt     DateTime?
+  claimedReward   Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([studentId, achievementId])
+  @@index([studentId, completed])
+}
+
+// 도전과제 카테고리
+enum AchievementCategory {
+  STUDY           // 학습 관련
+  FITNESS         // 운동 관련
+  READING         // 독서 관련
+  SOCIAL          // 소셜/친구 관련
+  STREAK          // 연속 달성
+  LEVEL           // 레벨/경험치
+  TIME            // 시간 관련
+  SPECIAL         // 특별 도전과제
+  MONTHLY         // 월별 테마
+}
+
+// 도전과제 난이도
+enum AchievementDifficulty {
+  EASY            // 쉬움 (브론즈)
+  MEDIUM          // 보통 (실버)
+  HARD            // 어려움 (골드)
+  LEGENDARY       // 전설 (플래티넘)
 }
 
 // AI 요약
@@ -409,4 +489,50 @@ enum LeaderboardPeriod {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+// 레벨업 이미지
+model LevelImage {
+  id              String    @id @default(cuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  level           Int       // 10, 20, 30, 40 등
+  imageUrl        String    // 생성된 이미지 URL
+  prompt          String    @db.Text // 사용된 프롬프트
+  
+  // 이미지 생성 시점의 능력치
+  strength        Int
+  intelligence    Int
+  dexterity       Int
+  charisma        Int
+  vitality        Int
+  totalXP         Int
+  totalMinutes    Int
+  
+  isPublic        Boolean   @default(true)  // 갤러리 공개 여부
+  likes           Int       @default(0)      // 좋아요 수
+  
+  likedBy         LevelImageLike[]  // 좋아요한 사용자들
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([studentId, level])
+  @@index([level, createdAt])
+}
+
+// 레벨 이미지 좋아요
+model LevelImageLike {
+  id              String    @id @default(cuid())
+  
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  levelImageId    String
+  levelImage      LevelImage @relation(fields: [levelImageId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  
+  @@unique([userId, levelImageId])  // 사용자당 이미지당 한 번만 좋아요 가능
 }

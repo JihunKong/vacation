@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import OpenAI from "openai"
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,10 +26,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: randomMessage })
     }
 
-    const openai = new OpenAI({
-      apiKey: apiKey,
-      baseURL: "https://api.upstage.ai/v1"
-    })
+    // Upstage API 직접 호출 준비
 
     // 학생 데이터에서 필요한 정보 추출
     const {
@@ -87,20 +83,32 @@ ${recentActivity ? `- 최근 활동: ${recentActivity}` : ''}
 
 메시지만 출력하고 다른 설명은 하지 마세요.`
 
-    // AI에게 메시지 생성 요청
-    const completion = await openai.chat.completions.create({
-      model: "solar-pro2",
-      messages: [
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.8,
-      max_tokens: 100,
+    // Upstage AI에게 메시지 생성 요청
+    const response = await fetch("https://api.upstage.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: "solar-pro2",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 100,
+      })
     })
 
-    const message = completion.choices[0]?.message?.content || "오늘도 성장하는 하루 되세요! 🌟"
+    if (!response.ok) {
+      throw new Error(`Upstage API error: ${response.status}`)
+    }
+
+    const completion = await response.json()
+    const message = completion.choices?.[0]?.message?.content || "오늘도 성장하는 하루 되세요! 🌟"
 
     return NextResponse.json({ message })
   } catch (error) {
