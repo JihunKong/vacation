@@ -10,6 +10,9 @@ echo "🚀 Starting deployment to EC2..."
 ssh -i "$KEY" "$SERVER" << 'ENDSSH'
 cd /home/ubuntu/vacation
 
+echo "📥 Pulling latest code from GitHub..."
+git pull origin main
+
 echo "📦 Installing dependencies..."
 npm install
 
