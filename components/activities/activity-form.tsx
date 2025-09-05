@@ -131,7 +131,7 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
         <div className="text-center py-8 space-y-4">
           <Sparkles className="h-16 w-16 text-yellow-500 mx-auto animate-pulse" />
           <h3 className="text-2xl font-bold">
-            +{earnedXP} XP 획듍!
+            +{earnedXP} XP 획득!
           </h3>
           <p className="text-gray-600">
             활동이 성공적으로 기록되었습니다
@@ -140,7 +140,7 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
             <Alert className="mt-4">
               <AlertDescription className="text-orange-600">
                 ⚠️ 이 카테고리의 일일 제한에 도달했습니다! 
-                추가 활동 시 10 XP만 획듍합니다.
+                추가 활동 시 10 XP만 획득합니다.
               </AlertDescription>
             </Alert>
           )}
