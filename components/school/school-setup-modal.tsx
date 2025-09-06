@@ -21,11 +21,21 @@ interface School {
   schoolType: string
 }
 
-export function SchoolSetupModal({ open, onClose }: { open: boolean, onClose?: () => void }) {
+export function SchoolSetupModal({ 
+  open, 
+  onClose,
+  isChanging = false,
+  currentRole = 'STUDENT'
+}: { 
+  open: boolean
+  onClose?: () => void
+  isChanging?: boolean
+  currentRole?: string
+}) {
   const [searchQuery, setSearchQuery] = useState('')
   const [schools, setSchools] = useState<School[]>([])
   const [selectedSchool, setSelectedSchool] = useState<School | null>(null)
-  const [role, setRole] = useState<'STUDENT' | 'TEACHER'>('STUDENT')
+  const [role, setRole] = useState<'STUDENT' | 'TEACHER'>(currentRole as 'STUDENT' | 'TEACHER')
   const [loading, setLoading] = useState(false)
   const [searching, setSearching] = useState(false)
   const router = useRouter()
@@ -75,7 +85,7 @@ export function SchoolSetupModal({ open, onClose }: { open: boolean, onClose?: (
       
       if (res.ok) {
         await update() // 세션 업데이트
-        alert('학교 정보가 설정되었습니다.')
+        alert(isChanging ? '학교가 변경되었습니다.' : '학교 정보가 설정되었습니다.')
         if (onClose) onClose()
         router.refresh()
       } else {
@@ -93,10 +103,11 @@ export function SchoolSetupModal({ open, onClose }: { open: boolean, onClose?: (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>학교 설정</DialogTitle>
+          <DialogTitle>{isChanging ? '학교 변경' : '학교 설정'}</DialogTitle>
           <DialogDescription>
-            학교를 선택하시면 학교별 리더보드를 이용할 수 있습니다.
-            교사로 등록하시면 같은 학교 학생들의 학습 현황을 확인할 수 있습니다.
+            {isChanging 
+              ? '다른 학교로 변경할 수 있습니다. 역할은 변경할 수 없습니다.'
+              : '학교를 선택하시면 학교별 리더보드를 이용할 수 있습니다. 교사로 등록하시면 같은 학교 학생들의 학습 현황을 확인할 수 있습니다.'}
           </DialogDescription>
         </DialogHeader>
         
@@ -171,31 +182,48 @@ export function SchoolSetupModal({ open, onClose }: { open: boolean, onClose?: (
             </div>
           )}
           
-          {/* 역할 선택 */}
-          <div className="space-y-2">
-            <Label>역할 선택</Label>
-            <RadioGroup value={role} onValueChange={(v) => setRole(v as 'STUDENT' | 'TEACHER')}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="STUDENT" id="student" />
-                <Label htmlFor="student" className="flex items-center cursor-pointer">
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  학생으로 등록
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="TEACHER" id="teacher" />
-                <Label htmlFor="teacher" className="flex items-center cursor-pointer">
-                  <Users className="h-4 w-4 mr-2" />
-                  교사로 등록
-                </Label>
-              </div>
-            </RadioGroup>
-            <p className="text-sm text-muted-foreground">
-              {role === 'TEACHER' 
-                ? '교사로 등록하면 같은 학교 학생들의 학습 현황을 확인할 수 있습니다.'
-                : '학생으로 등록하면 학습 활동을 기록하고 리더보드에 참여할 수 있습니다.'}
-            </p>
-          </div>
+          {/* 역할 선택 - 학교 변경 시에는 숨김 */}
+          {!isChanging && (
+            <div className="space-y-2">
+              <Label>역할 선택</Label>
+              <RadioGroup value={role} onValueChange={(v) => setRole(v as 'STUDENT' | 'TEACHER')}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="STUDENT" id="student" />
+                  <Label htmlFor="student" className="flex items-center cursor-pointer">
+                    <GraduationCap className="h-4 w-4 mr-2" />
+                    학생으로 등록
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="TEACHER" id="teacher" />
+                  <Label htmlFor="teacher" className="flex items-center cursor-pointer">
+                    <Users className="h-4 w-4 mr-2" />
+                    교사로 등록
+                  </Label>
+                </div>
+              </RadioGroup>
+              <p className="text-sm text-muted-foreground">
+                {role === 'TEACHER' 
+                  ? '교사로 등록하면 같은 학교 학생들의 학습 현황을 확인할 수 있습니다.'
+                  : '학생으로 등록하면 학습 활동을 기록하고 리더보드에 참여할 수 있습니다.'}
+              </p>
+            </div>
+          )}
+          
+          {/* 학교 변경 시 현재 역할 표시 */}
+          {isChanging && (
+            <div className="p-3 bg-muted rounded-lg">
+              <p className="text-sm">
+                <span className="font-medium">현재 역할:</span>{' '}
+                <Badge variant={currentRole === 'TEACHER' ? 'default' : 'secondary'}>
+                  {currentRole === 'TEACHER' ? '교사' : '학생'}
+                </Badge>
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                학교 변경 시 역할은 변경할 수 없습니다.
+              </p>
+            </div>
+          )}
           
           {/* 버튼 */}
           <div className="flex justify-end gap-2">
@@ -208,7 +236,7 @@ export function SchoolSetupModal({ open, onClose }: { open: boolean, onClose?: (
               onClick={handleSave} 
               disabled={!selectedSchool || loading}
             >
-              {loading ? '저장 중...' : '학교 설정 완료'}
+              {loading ? '저장 중...' : (isChanging ? '학교 변경 완료' : '학교 설정 완료')}
             </Button>
           </div>
         </div>

@@ -46,6 +46,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
     { href: "/dashboard/stats", label: "통계", icon: BarChart },
     { href: "/dashboard/leaderboard", label: "리더보드", icon: Users },
     { href: "/dashboard/gallery", label: "갤러리", icon: Image },
+    { href: "/dashboard/profile", label: "프로필", icon: Settings },
   ]
 
   // 교사 메뉴 추가
