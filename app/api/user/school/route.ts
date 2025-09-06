@@ -71,13 +71,8 @@ export async function PUT(req: NextRequest) {
       )
     }
     
-    // 이미 학교가 설정된 경우
-    if (existingUser.schoolId) {
-      return NextResponse.json(
-        { error: "이미 학교가 설정되어 있습니다. 학교 변경은 관리자에게 문의하세요." },
-        { status: 400 }
-      )
-    }
+    // 이미 학교가 설정된 경우 - 변경 가능하도록 수정
+    // (주의: 교사 역할로는 변경 불가)
     
     // 학교 정보 확인 또는 생성
     let school = await prisma.school.findUnique({
@@ -105,16 +100,27 @@ export async function PUT(req: NextRequest) {
       })
     }
     
-    // 역할 결정 (교사로 변경하려면 학생 프로필이 없어야 함)
+    // 역할 결정
     let userRole = existingUser.role
     
-    if (role === 'TEACHER' && !existingUser.studentProfile) {
-      userRole = 'TEACHER'
-    } else if (role === 'TEACHER' && existingUser.studentProfile) {
+    // 학교 변경 시에는 역할 변경 불가
+    if (existingUser.schoolId && role && role !== existingUser.role) {
       return NextResponse.json(
-        { error: "이미 학생으로 활동 중인 계정은 교사로 변경할 수 없습니다." },
+        { error: "학교 변경 시 역할은 변경할 수 없습니다." },
         { status: 400 }
       )
+    }
+    
+    // 처음 설정 시 역할 선택 가능
+    if (!existingUser.schoolId) {
+      if (role === 'TEACHER' && !existingUser.studentProfile) {
+        userRole = 'TEACHER'
+      } else if (role === 'TEACHER' && existingUser.studentProfile) {
+        return NextResponse.json(
+          { error: "이미 학생으로 활동 중인 계정은 교사로 변경할 수 없습니다." },
+          { status: 400 }
+        )
+      }
     }
     
     // 사용자 정보 업데이트
