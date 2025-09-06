@@ -14,8 +14,9 @@ import { ko } from "date-fns/locale"
 export default async function StudentDetailPage({
   params
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   
   // 교사 권한 및 학교 확인
@@ -31,7 +32,7 @@ export default async function StudentDetailPage({
   // 학생 정보 가져오기 (같은 학교인지 확인)
   const student = await prisma.user.findFirst({
     where: {
-      id: params.id,
+      id: id,
       schoolId: teacher.schoolId,
       role: "STUDENT"
     },
