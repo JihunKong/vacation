@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Trophy, Medal, Award, Crown, Calendar } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Trophy, Medal, Award, Crown, Calendar, School, Globe } from "lucide-react"
 import { format, subMonths } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
@@ -14,11 +15,13 @@ interface LeaderboardData {
   mostActiveStudents: any[]
   longestStreaks: any[]
   currentUserId: string
+  userSchool?: any
 }
 
 export default function LeaderboardClient({ initialData, currentUserId }: { initialData: LeaderboardData, currentUserId: string }) {
   const [data, setData] = useState(initialData)
   const [selectedMonth, setSelectedMonth] = useState('current')
+  const [schoolOnly, setSchoolOnly] = useState(false)
   const [loading, setLoading] = useState(false)
 
   // 최근 12개월 옵션 생성
@@ -33,10 +36,14 @@ export default function LeaderboardClient({ initialData, currentUserId }: { init
     })
   ]
 
-  const loadLeaderboard = async (period: string) => {
+  const loadLeaderboard = async (period: string, schoolFilter: boolean) => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/leaderboard?period=${period}`)
+      const params = new URLSearchParams({
+        period,
+        schoolOnly: schoolFilter.toString()
+      })
+      const res = await fetch(`/api/leaderboard?${params}`)
       if (res.ok) {
         const newData = await res.json()
         setData(newData)
@@ -49,10 +56,8 @@ export default function LeaderboardClient({ initialData, currentUserId }: { init
   }
 
   useEffect(() => {
-    if (selectedMonth !== 'current') {
-      loadLeaderboard(selectedMonth)
-    }
-  }, [selectedMonth])
+    loadLeaderboard(selectedMonth, schoolOnly)
+  }, [selectedMonth, schoolOnly])
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -82,23 +87,55 @@ export default function LeaderboardClient({ initialData, currentUserId }: { init
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">리더보드</h1>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {monthOptions.map(option => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-3xl font-bold">리더보드</h1>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {monthOptions.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+        
+        {/* 학교별/전체 필터 버튼 */}
+        <div className="flex gap-2">
+          <Button
+            variant={!schoolOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSchoolOnly(false)}
+          >
+            <Globe className="h-4 w-4 mr-2" />
+            전체
+          </Button>
+          <Button
+            variant={schoolOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSchoolOnly(true)}
+          >
+            <School className="h-4 w-4 mr-2" />
+            우리 학교
+          </Button>
+        </div>
+        
+        {/* 현재 필터 상태 표시 */}
+        {schoolOnly && data.userSchool && (
+          <div className="mt-2">
+            <Badge variant="secondary">
+              <School className="h-3 w-3 mr-1" />
+              {data.userSchool.name}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {loading ? (

@@ -21,14 +21,25 @@ export function SchoolSetupBanner() {
       const res = await fetch('/api/user/school')
       if (res.ok) {
         const data = await res.json()
+        console.log('School status:', data) // 디버깅용
         if (!data.schoolId) {
           setHasSchool(false)
           // 로컬 스토리지에서 배너 숨김 상태 확인
           const hideBanner = localStorage.getItem('hideSchoolBanner')
-          if (!hideBanner) {
+          if (hideBanner) {
+            // 숨김 기간 확인
+            const hideUntil = new Date(hideBanner)
+            if (new Date() > hideUntil) {
+              // 숨김 기간 만료
+              localStorage.removeItem('hideSchoolBanner')
+              setShowBanner(true)
+            }
+          } else {
             setShowBanner(true)
           }
         }
+      } else {
+        console.error('Failed to fetch school status:', res.status)
       }
     } catch (error) {
       console.error('Failed to check school status:', error)
