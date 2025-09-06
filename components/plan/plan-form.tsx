@@ -69,13 +69,16 @@ export function PlanForm({ studentProfileId, existingPlan }: PlanFormProps) {
     setIsLoading(true)
 
     try {
+      // 빈 제목이 있는 항목은 필터링
+      const validItems = items.filter(item => item.title.trim() !== "")
+      
       const response = await fetch("/api/plans", {
         method: existingPlan ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           studentProfileId,
           planId: existingPlan?.id,
-          items: items.map((item, index) => ({
+          items: validItems.map((item, index) => ({
             ...item,
             targetMinutes: parseInt(item.targetMinutes),
             order: index,
