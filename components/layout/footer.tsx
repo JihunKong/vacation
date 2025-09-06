@@ -15,7 +15,7 @@ export function Footer() {
             <Link href="/privacy" className="text-gray-600 hover:text-gray-900 hover:underline">
               개인정보처리방침
             </Link>
-            <Link href="/gallery" className="text-gray-600 hover:text-gray-900 hover:underline">
+            <Link href="/dashboard/gallery" className="text-gray-600 hover:text-gray-900 hover:underline">
               갤러리
             </Link>
             <a href="mailto:purusil55@gmail.com" className="text-gray-600 hover:text-gray-900 hover:underline">
