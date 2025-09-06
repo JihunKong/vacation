@@ -13,6 +13,17 @@ export async function GET(req: NextRequest) {
 
     const searchParams = req.nextUrl.searchParams
     const period = searchParams.get('period') || 'current'
+    const schoolOnly = searchParams.get('schoolOnly') === 'true'
+    
+    // 사용자의 학교 정보 가져오기
+    let userSchoolId: string | null = null
+    if (schoolOnly) {
+      const currentUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { schoolId: true }
+      })
+      userSchoolId = currentUser?.schoolId || null
+    }
     
     let monthStart: Date
     let monthEnd: Date
@@ -28,11 +39,16 @@ export async function GET(req: NextRequest) {
       monthEnd = endOfMonth(monthStart)
     }
 
-    // 해당 월 활동 집계
+    // 해당 월 활동 집계 (학교별 필터링 포함)
+    const whereClause = schoolOnly && userSchoolId 
+      ? { user: { schoolId: userSchoolId } }
+      : {}
+    
     const studentsWithMonthlyStats = await prisma.studentProfile.findMany({
+      where: whereClause,
       include: {
         user: {
-          select: { name: true, email: true },
+          select: { name: true, email: true, schoolId: true, school: true },
         },
         activities: {
           where: {
@@ -68,26 +84,49 @@ export async function GET(req: NextRequest) {
       .sort((a, b) => b.monthlyMinutes - a.monthlyMinutes)
       .slice(0, 10)
 
-    // 연속 출석 기준
+    // 연속 출석 기준 (학교별 필터링 포함)
     // 과거 월의 경우 해당 시점의 데이터가 없으므로 현재 데이터 사용
+    const streakWhereClause = schoolOnly && userSchoolId 
+      ? { currentStreak: { gt: 0 }, user: { schoolId: userSchoolId } }
+      : { currentStreak: { gt: 0 } }
+    
     const longestStreaks = period === 'current' 
       ? await prisma.studentProfile.findMany({
           orderBy: { currentStreak: "desc" },
-          where: { currentStreak: { gt: 0 } },
+          where: streakWhereClause,
           take: 10,
           include: {
             user: {
-              select: { name: true },
+              select: { name: true, schoolId: true, school: true },
             },
           },
         })
       : [] // 과거 데이터는 연속 기록 표시 안 함
 
+    // 사용자의 학교 정보 가져오기 (응답용)
+    const userWithSchool = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { 
+        id: true,
+        schoolId: true,
+        school: {
+          select: { 
+            id: true, 
+            name: true,
+            region: true,
+            district: true
+          }
+        }
+      }
+    })
+    
     return NextResponse.json({
       topStudents,
       mostActiveStudents,
       longestStreaks,
-      currentUserId: session.user.id
+      currentUserId: session.user.id,
+      userSchool: userWithSchool?.school,
+      schoolOnly
     })
   } catch (error) {
     console.error('Leaderboard error:', error)

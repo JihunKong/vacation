@@ -13,6 +13,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 학교 모델
+model School {
+  id            String    @id @default(cuid())
+  neisCode      String    @unique  // 나이스 학교 코드
+  name          String              // 학교명
+  region        String?             // 지역 (시/도)
+  district      String?             // 지역구 (시/군/구)
+  address       String?             // 주소
+  schoolType    SchoolType          // 학교 유형
+  
+  // 관계
+  users         User[]
+  leaderboardEntries LeaderboardEntry[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// 학교 유형
+enum SchoolType {
+  ELEMENTARY    // 초등학교
+  MIDDLE        // 중학교
+  HIGH          // 고등학교
+  SPECIAL       // 특수학교
+  OTHER         // 기타
+}
+
 // 사용자 모델
 model User {
   id            String    @id @default(cuid())
@@ -22,6 +49,10 @@ model User {
   role          Role      @default(STUDENT)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
+  // 학교 정보
+  schoolId      String?
+  school        School?   @relation(fields: [schoolId], references: [id])
   
   // 약관 동의 정보
   termsAcceptedAt    DateTime?  // 서비스 이용약관 동의 시간
@@ -470,11 +501,16 @@ model LeaderboardEntry {
   studentId       String
   student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   
+  // 학교 정보
+  schoolId        String?
+  school          School?   @relation(fields: [schoolId], references: [id])
+  
   period          LeaderboardPeriod
   category        Category?  // null이면 전체
   
   score           Int
-  rank            Int
+  rank            Int       // 전체 순위
+  schoolRank      Int?      // 학교 내 순위
   
   date            DateTime  @db.Date  // 해당 기간의 날짜
   
@@ -483,6 +519,7 @@ model LeaderboardEntry {
   
   @@unique([studentId, period, category, date])
   @@index([period, category, date, rank])
+  @@index([schoolId, period, category, date, schoolRank])
 }
 
 enum LeaderboardPeriod {
