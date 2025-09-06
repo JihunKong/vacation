@@ -50,7 +50,12 @@ export function PlanForm({ studentProfileId, existingPlan }: PlanFormProps) {
   }
 
   const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index))
+    // 마지막 하나 남은 항목을 삭제하면 빈 항목으로 교체
+    if (items.length === 1) {
+      setItems([{ title: "", category: Category.STUDY, targetMinutes: "30" }])
+    } else {
+      setItems(items.filter((_, i) => i !== index))
+    }
   }
 
   const updateItem = (index: number, field: keyof PlanItemForm, value: string) => {
@@ -149,7 +154,6 @@ export function PlanForm({ studentProfileId, existingPlan }: PlanFormProps) {
               variant="ghost"
               size="icon"
               onClick={() => removeItem(index)}
-              disabled={items.length === 1}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
