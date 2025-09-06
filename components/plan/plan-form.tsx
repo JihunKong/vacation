@@ -113,7 +113,6 @@ export function PlanForm({ studentProfileId, existingPlan }: PlanFormProps) {
                   value={item.title}
                   onChange={(e) => updateItem(index, "title", e.target.value)}
                   placeholder="예: 수학 문제집 풀기"
-                  required
                 />
               </div>
               
@@ -146,7 +145,6 @@ export function PlanForm({ studentProfileId, existingPlan }: PlanFormProps) {
                     step="10"
                     value={item.targetMinutes}
                     onChange={(e) => updateItem(index, "targetMinutes", e.target.value)}
-                    required
                   />
                 </div>
               </div>
