@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
+import { getSchoolByNeisCode } from "@/lib/school-data"
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name, termsAccepted, privacyAccepted } = await req.json()
+    const { email, password, name, termsAccepted, privacyAccepted, neisCode, role } = await req.json()
 
     // 입력값 검증
     if (!email || !password || !name) {
@@ -41,27 +42,65 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // 학교 정보 확인 (neisCode가 제공된 경우)
+    let schoolId: string | undefined = undefined
+    
+    if (neisCode) {
+      // 먼저 DB에 학교가 있는지 확인
+      let school = await prisma.school.findUnique({
+        where: { neisCode }
+      })
+      
+      // DB에 없으면 학교 데이터에서 찾아서 생성
+      if (!school) {
+        const schoolData = getSchoolByNeisCode(neisCode)
+        if (schoolData) {
+          school = await prisma.school.create({
+            data: {
+              neisCode: schoolData.neisCode,
+              name: schoolData.name,
+              region: schoolData.region,
+              district: schoolData.district,
+              address: schoolData.address,
+              schoolType: schoolData.schoolType
+            }
+          })
+        }
+      }
+      
+      if (school) {
+        schoolId = school.id
+      }
+    }
+
+    // 역할 검증 (학교가 선택되지 않은 경우 학생으로만 가입 가능)
+    const userRole = role === 'TEACHER' && schoolId ? 'TEACHER' : 'STUDENT'
+
     // 비밀번호 해시
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // 사용자 생성 (동의 시간 포함)
+    // 사용자 생성 (동의 시간 및 학교 정보 포함)
     const now = new Date()
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
+        role: userRole,
+        schoolId,
         termsAcceptedAt: now,
         privacyAcceptedAt: now,
       },
     })
 
-    // 학생 프로필 자동 생성
-    await prisma.studentProfile.create({
-      data: {
-        userId: user.id,
-      },
-    })
+    // 학생 역할인 경우에만 학생 프로필 생성
+    if (userRole === 'STUDENT') {
+      await prisma.studentProfile.create({
+        data: {
+          userId: user.id,
+        },
+      })
+    }
 
     return NextResponse.json({
       id: user.id,

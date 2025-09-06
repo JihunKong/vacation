@@ -8,6 +8,7 @@ import { RecentActivities } from "@/components/dashboard/recent-activities"
 import { TodayPlan } from "@/components/dashboard/today-plan"
 import { AIMessage } from "@/components/dashboard/ai-message"
 import AchievementTracker from "@/components/features/AchievementTracker"
+import { SchoolSetupBanner } from "@/components/school/school-setup-banner"
 import { calculateLevel } from "@/lib/game/stats"
 
 export default async function DashboardPage() {
@@ -87,6 +88,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="container py-8">
+      <SchoolSetupBanner />
+      
       <div className="mb-8">
         <h1 className="text-3xl font-bold">
           안녕하세요, {session.user.name || "학생"}님! 👋
