@@ -141,7 +141,7 @@ export default async function TeacherActivitiesPage() {
                     </div>
                     <FeedbackDialog
                       activityId={activity.id}
-                      studentId={activity.student.user.id}
+                      studentId={activity.student.id}
                       studentName={activity.student.user.name || activity.student.user.email}
                       activityTitle={activity.title}
                       disabled={hasGivenFeedback}

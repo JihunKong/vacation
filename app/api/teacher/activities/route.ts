@@ -74,9 +74,12 @@ export async function GET() {
       date: activity.date,
       xpEarned: activity.xpEarned,
       student: {
-        id: activity.student.user.id,
-        name: activity.student.user.name,
-        email: activity.student.user.email
+        id: activity.studentId,
+        user: {
+          id: activity.student.user.id,
+          name: activity.student.user.name,
+          email: activity.student.user.email
+        }
       },
       feedbacks: activity.feedbacks,
       hasTeacherFeedback: activity.feedbacks.length > 0
