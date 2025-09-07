@@ -319,9 +319,19 @@ export async function POST(req: NextRequest) {
         })
       }
 
+      // 레벨업 정보 추가
+      const levelUpInfo = level > previousLevel ? {
+        hasLeveledUp: true,
+        previousLevel,
+        newLevel: level,
+        isMilestone: level % 10 === 0 && level > 0,
+        milestoneLevel: level % 10 === 0 ? level : null
+      } : null
+
       return { 
         activity, 
         newBadges: newBadges.length,
+        levelUp: levelUpInfo,
         dailyLimit: {
           category,
           todayMinutes: todayMinutesInCategory + minutes,

@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Category, Plan, PlanItem } from "@prisma/client"
 import { Sparkles } from "lucide-react"
+import { LevelMilestoneCelebration } from "@/components/ui/level-milestone-celebration"
 
 interface ActivityFormProps {
   studentProfileId: string
@@ -32,6 +33,15 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
   const [showResult, setShowResult] = useState(false)
   const [earnedXP, setEarnedXP] = useState(0)
   const [limitReached, setLimitReached] = useState(false)
+  const [milestoneData, setMilestoneData] = useState<{
+    open: boolean
+    level: number
+    previousLevel: number
+  }>({
+    open: false,
+    level: 0,
+    previousLevel: 0
+  })
   
   const [formData, setFormData] = useState<{
     title: string
@@ -100,20 +110,32 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
       const result = await response.json()
       setEarnedXP(result.activity.xpEarned)
       setLimitReached(result.dailyLimit?.isLimitReached || false)
+      
+      // 10레벨 단위 달성 체크
+      if (result.levelUp?.isMilestone) {
+        setMilestoneData({
+          open: true,
+          level: result.levelUp.newLevel,
+          previousLevel: result.levelUp.previousLevel
+        })
+      }
+      
       setShowResult(true)
       
-      // 3초 후 초기화
-      setTimeout(() => {
-        setFormData({
-          title: "",
-          description: "",
-          category: Category.STUDY,
-          minutes: "30",
-          planItemId: "",
-        })
-        setShowResult(false)
-        router.refresh()
-      }, 3000)
+      // 3초 후 초기화 (milestone 모달이 없을 때만)
+      if (!result.levelUp?.isMilestone) {
+        setTimeout(() => {
+          setFormData({
+            title: "",
+            description: "",
+            category: Category.STUDY,
+            minutes: "30",
+            planItemId: "",
+          })
+          setShowResult(false)
+          router.refresh()
+        }, 3000)
+      }
     } catch (error) {
       console.error("Error recording activity:", error)
       const errorMessage = error instanceof Error ? error.message : "활동 기록에 실패했습니다"
@@ -241,6 +263,28 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
           </Button>
         </form>
       )}
+      
+      {/* 10레벨 단위 달성 축하 모달 */}
+      <LevelMilestoneCelebration
+        open={milestoneData.open}
+        onOpenChange={(open) => {
+          setMilestoneData({ ...milestoneData, open })
+          if (!open) {
+            // 모달 닫을 때 폼 초기화
+            setFormData({
+              title: "",
+              description: "",
+              category: Category.STUDY,
+              minutes: "30",
+              planItemId: "",
+            })
+            setShowResult(false)
+            router.refresh()
+          }
+        }}
+        level={milestoneData.level}
+        previousLevel={milestoneData.previousLevel}
+      />
     </>
   )
 }

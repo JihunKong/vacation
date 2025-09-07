@@ -44,35 +44,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "학교가 설정되지 않았습니다." }, { status: 400 })
     }
 
-    // 학생이 같은 학교에 속하는지 확인
-    const student = await prisma.user.findUnique({
-      where: { id: studentId },
-      select: { schoolId: true }
-    })
-
-    if (student?.schoolId !== teacher.schoolId) {
-      return NextResponse.json({ error: "같은 학교 학생에게만 피드백을 제공할 수 있습니다." }, { status: 403 })
-    }
-
     // 활동이 존재하고 해당 학생의 것인지 확인
     const activity = await prisma.activity.findFirst({
       where: {
         id: activityId,
-        student: {
-          user: {
-            id: studentId
-          }
-        }
+        studentId: studentId  // studentId는 이미 StudentProfile의 ID
       },
       include: {
         feedbacks: {
           where: { teacherId: session.user.id }
+        },
+        student: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                schoolId: true,
+                name: true,
+                email: true
+              }
+            }
+          }
         }
       }
     })
 
     if (!activity) {
       return NextResponse.json({ error: "활동을 찾을 수 없습니다." }, { status: 404 })
+    }
+
+    // 학생이 같은 학교에 속하는지 확인
+    if (activity.student.user.schoolId !== teacher.schoolId) {
+      return NextResponse.json({ error: "같은 학교 학생에게만 피드백을 제공할 수 있습니다." }, { status: 403 })
     }
 
     // 이미 피드백을 제공했는지 확인
@@ -86,7 +89,7 @@ export async function POST(request: Request) {
       const feedback = await tx.feedback.create({
         data: {
           teacherId: session.user.id,
-          studentId: studentId,
+          studentId: activity.student.user.id,  // User ID로 변경
           activityId: activityId,
           message: message.trim(),
           type: type
@@ -96,7 +99,7 @@ export async function POST(request: Request) {
       // 학생에게 알림 생성
       const notification = await tx.notification.create({
         data: {
-          userId: studentId,
+          userId: activity.student.user.id,  // User ID로 변경
           type: type,
           title: type === "FEEDBACK" ? "교사 피드백" : "교사 응원",
           message: type === "FEEDBACK" 

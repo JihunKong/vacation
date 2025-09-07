@@ -29,7 +29,6 @@ tar -czf teacher-features-deploy.tar.gz \
   components/teacher \
   components/features/notification-bell.tsx \
   components/layout/dashboard-nav.tsx \
-  components/ui/dropdown-menu.tsx \
   prisma/schema.prisma \
   package.json
 
