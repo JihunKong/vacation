@@ -66,6 +66,13 @@ model User {
   
   // 좋아요한 레벨 이미지들
   likedLevelImages LevelImageLike[]
+  
+  // 피드백 관계
+  sentFeedbacks    Feedback[] @relation("TeacherFeedbacks")
+  receivedFeedbacks Feedback[] @relation("StudentFeedbacks")
+  
+  // 알림
+  notifications    Notification[]
 }
 
 // 역할 열거형
@@ -193,6 +200,9 @@ model Activity {
   
   // 뽀모도로 세션에서 생성된 경우
   pomodoroSession PomodoroSession?
+  
+  // 교사 피드백
+  feedbacks       Feedback[]
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -572,4 +582,63 @@ model LevelImageLike {
   createdAt       DateTime  @default(now())
   
   @@unique([userId, levelImageId])  // 사용자당 이미지당 한 번만 좋아요 가능
+}
+
+// 교사 피드백/응원 메시지
+model Feedback {
+  id              String    @id @default(cuid())
+  
+  teacherId       String
+  teacher         User      @relation("TeacherFeedbacks", fields: [teacherId], references: [id], onDelete: Cascade)
+  
+  studentId       String
+  student         User      @relation("StudentFeedbacks", fields: [studentId], references: [id], onDelete: Cascade)
+  
+  activityId      String?
+  activity        Activity? @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  
+  message         String    @db.Text
+  type            FeedbackType
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([studentId, createdAt])
+  @@index([teacherId, createdAt])
+}
+
+// 피드백 유형
+enum FeedbackType {
+  FEEDBACK      // 피드백
+  ENCOURAGEMENT // 응원
+}
+
+// 알림
+model Notification {
+  id              String    @id @default(cuid())
+  
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type            NotificationType
+  title           String
+  message         String    @db.Text
+  isRead          Boolean   @default(false)
+  
+  relatedId       String?   // feedbackId, activityId 등
+  relatedType     String?   // "feedback", "achievement" 등
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([userId, isRead, createdAt])
+}
+
+// 알림 유형
+enum NotificationType {
+  FEEDBACK      // 교사 피드백
+  ENCOURAGEMENT // 교사 응원
+  ACHIEVEMENT   // 업적 달성
+  LEVEL_UP      // 레벨업
+  SYSTEM        // 시스템 공지
 }

@@ -40,6 +40,9 @@ export default async function TeacherLayout({
               <Link href="/teacher" className="text-gray-700 hover:text-gray-900">
                 개요
               </Link>
+              <Link href="/teacher/activities" className="text-gray-700 hover:text-gray-900">
+                학생 활동
+              </Link>
               <Link href="/teacher/students" className="text-gray-700 hover:text-gray-900">
                 학생 관리
               </Link>

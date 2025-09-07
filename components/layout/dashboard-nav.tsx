@@ -25,6 +25,7 @@ import {
   Menu
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import NotificationBell from "@/components/features/notification-bell"
 
 interface DashboardNavProps {
   user: {
@@ -154,6 +155,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
 
         {/* 데스크톱 사용자 정보 */}
         <div className="hidden md:flex items-center gap-4">
+          <NotificationBell />
           <div className="text-sm text-gray-600">
             {user.name || user.email}
           </div>
@@ -168,6 +170,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
         
         {/* 모바일 사용자 정보 (간소화) */}
         <div className="md:hidden flex items-center gap-2">
+          <NotificationBell />
           <div className="text-sm text-gray-600 truncate max-w-[150px]">
             {user.name || user.email}
           </div>
