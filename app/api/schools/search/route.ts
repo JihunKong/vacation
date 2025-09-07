@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { searchSchools } from "@/lib/school-data"
+import { searchSchoolsFromNEIS } from "@/lib/neis-api"
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,7 +13,8 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const schools = searchSchools(query)
+    // NEIS API를 사용하여 실제 학교 검색
+    const schools = await searchSchoolsFromNEIS(query)
 
     return NextResponse.json({
       schools,

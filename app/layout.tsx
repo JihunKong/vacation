@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
 import { Footer } from '@/components/layout/footer'
+import AuthSessionProvider from '@/providers/session-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -43,11 +44,13 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="min-h-screen flex flex-col">
-        <div className="flex-1">
-          {children}
-        </div>
-        <Footer />
-        <Toaster richColors position="top-right" />
+        <AuthSessionProvider>
+          <div className="flex-1">
+            {children}
+          </div>
+          <Footer />
+          <Toaster richColors position="top-right" />
+        </AuthSessionProvider>
       </body>
     </html>
   )

@@ -7,8 +7,9 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 
 export function SchoolSetupCard() {
-  const [hasSchool, setHasSchool] = useState(true)
+  const [hasSchool, setHasSchool] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [userRole, setUserRole] = useState<string | null>(null)
 
   useEffect(() => {
     checkSchoolStatus()
@@ -19,16 +20,27 @@ export function SchoolSetupCard() {
       const res = await fetch('/api/user/school')
       if (res.ok) {
         const data = await res.json()
+        console.log('School status:', data) // 디버깅용
         setHasSchool(!!data.schoolId)
+        setUserRole(data.role)
+      } else {
+        console.error('Failed to fetch school status:', res.status)
+        setHasSchool(false)
       }
     } catch (error) {
       console.error('Failed to check school status:', error)
+      setHasSchool(false)
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading || hasSchool) {
+  // 로딩 중이거나 이미 학교가 설정된 경우 표시하지 않음
+  if (loading) {
+    return null
+  }
+
+  if (hasSchool) {
     return null
   }
 

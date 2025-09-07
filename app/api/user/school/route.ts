@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { getSchoolByNeisCode } from "@/lib/school-data"
+import { searchSchoolsFromNEIS } from "@/lib/neis-api"
 
 // 현재 사용자의 학교 정보 조회
 export async function GET(req: NextRequest) {
@@ -80,7 +80,10 @@ export async function PUT(req: NextRequest) {
     })
     
     if (!school) {
-      const schoolData = getSchoolByNeisCode(neisCode)
+      // NEIS API를 통해 학교 정보 검증
+      const schools = await searchSchoolsFromNEIS(neisCode)
+      const schoolData = schools.find(s => s.neisCode === neisCode)
+      
       if (!schoolData) {
         return NextResponse.json(
           { error: "유효하지 않은 학교 코드입니다." },
