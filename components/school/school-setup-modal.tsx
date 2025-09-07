@@ -76,6 +76,7 @@ export function SchoolSetupModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           neisCode: selectedSchool.neisCode,
+          schoolData: selectedSchool,
           role
         })
       })

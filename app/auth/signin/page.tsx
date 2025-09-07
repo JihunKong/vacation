@@ -151,6 +151,7 @@ export default function SignInPage() {
                     id="signin-password"
                     name="password"
                     type="password"
+                    autoComplete="current-password"
                     required
                   />
                 </div>

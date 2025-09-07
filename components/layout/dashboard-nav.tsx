@@ -50,8 +50,14 @@ export function DashboardNav({ user }: DashboardNavProps) {
   ]
 
   // 교사 메뉴 추가
-  if (user.role === "TEACHER" || user.role === "ADMIN") {
+  if (user.role === "TEACHER") {
     navItems.push({ href: "/teacher", label: "교사 관리", icon: Settings })
+  }
+  
+  // 관리자 메뉴 추가
+  if (user.role === "ADMIN") {
+    navItems.push({ href: "/teacher", label: "교사 관리", icon: Settings })
+    navItems.push({ href: "/admin", label: "관리자", icon: Settings })
   }
 
   return (

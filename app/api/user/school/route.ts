@@ -49,7 +49,7 @@ export async function PUT(req: NextRequest) {
       )
     }
     
-    const { neisCode, role } = await req.json()
+    const { neisCode, schoolData, role } = await req.json()
     
     if (!neisCode) {
       return NextResponse.json(
@@ -80,13 +80,10 @@ export async function PUT(req: NextRequest) {
     })
     
     if (!school) {
-      // NEIS API를 통해 학교 정보 검증
-      const schools = await searchSchoolsFromNEIS(neisCode)
-      const schoolData = schools.find(s => s.neisCode === neisCode)
-      
+      // 학교가 없으면 생성 (프론트엔드에서 전달받은 정보 사용)
       if (!schoolData) {
         return NextResponse.json(
-          { error: "유효하지 않은 학교 코드입니다." },
+          { error: "학교 정보가 필요합니다." },
           { status: 400 }
         )
       }
@@ -96,9 +93,9 @@ export async function PUT(req: NextRequest) {
           neisCode: schoolData.neisCode,
           name: schoolData.name,
           region: schoolData.region,
-          district: schoolData.district,
-          address: schoolData.address,
-          schoolType: schoolData.schoolType
+          district: schoolData.district || '',
+          address: schoolData.address || '',
+          schoolType: schoolData.schoolType || 'OTHER'
         }
       })
     }
