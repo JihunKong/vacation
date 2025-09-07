@@ -11,7 +11,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Search, School, GraduationCap, Users } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 
 interface School {
   neisCode: string
@@ -40,7 +39,6 @@ export function SchoolSetupModal({
   const [loading, setLoading] = useState(false)
   const [searching, setSearching] = useState(false)
   const router = useRouter()
-  const { update } = useSession()
 
   // 학교 검색
   const searchSchools = async () => {
@@ -85,7 +83,6 @@ export function SchoolSetupModal({
       const data = await res.json()
       
       if (res.ok) {
-        await update() // 세션 업데이트
         alert(isChanging ? '학교가 변경되었습니다.' : '학교 정보가 설정되었습니다.')
         if (onClose) onClose()
         router.refresh()
