@@ -6,26 +6,43 @@ import { generateLevelImage, CharacterStats } from '@/lib/gemini';
 
 export async function POST(req: NextRequest) {
   try {
-    // 인증 확인
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const body = await req.json();
+    const { level, studentId, serverToken } = body;
 
-    // 사용자 프로필 가져오기
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      include: {
-        studentProfile: true
+    let profile;
+
+    // 서버 사이드 요청인 경우 (내부 API 호출)
+    if (serverToken === process.env.NEXTAUTH_SECRET && studentId) {
+      profile = await prisma.studentProfile.findUnique({
+        where: { id: studentId },
+        include: {
+          user: true
+        }
+      });
+
+      if (!profile) {
+        return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
       }
-    });
+    } else {
+      // 클라이언트 요청인 경우 (일반 인증)
+      const session = await getServerSession(authOptions);
+      if (!session?.user?.email) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
 
-    if (!user?.studentProfile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        include: {
+          studentProfile: true
+        }
+      });
+
+      if (!user?.studentProfile) {
+        return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+      }
+
+      profile = user.studentProfile;
     }
-
-    const profile = user.studentProfile;
-    const { level } = await req.json();
 
     // 레벨 유효성 검사 (10의 배수만 허용)
     if (!level || level % 10 !== 0 || level > profile.level) {

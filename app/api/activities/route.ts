@@ -257,10 +257,13 @@ export async function POST(req: NextRequest) {
               fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/level-image/generate`, {
                 method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
-                  'Cookie': req.headers.get('cookie') || ''
+                  'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ level: milestone })
+                body: JSON.stringify({ 
+                  level: milestone,
+                  studentId: studentProfileId,
+                  serverToken: process.env.NEXTAUTH_SECRET
+                })
               }).catch(error => {
                 console.error(`Failed to trigger level image generation for level ${milestone}:`, error)
               })

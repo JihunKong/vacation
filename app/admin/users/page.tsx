@@ -19,6 +19,7 @@ interface User {
   role: string
   schoolId: string | null
   school?: {
+    id: string
     name: string
   }
   createdAt: string
@@ -26,6 +27,12 @@ interface User {
     totalXP: number
     level: number
   }
+}
+
+interface School {
+  id: string
+  name: string
+  domain: string | null
 }
 
 export default function UserManagement() {
@@ -38,10 +45,13 @@ export default function UserManagement() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<User | null>(null)
+  const [schools, setSchools] = useState<School[]>([])
+  const [editingSchoolId, setEditingSchoolId] = useState<string>("")
   const router = useRouter()
 
   useEffect(() => {
     fetchUsers()
+    fetchSchools()
   }, [])
 
   useEffect(() => {
@@ -59,6 +69,18 @@ export default function UserManagement() {
       console.error('Failed to fetch users:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchSchools = async () => {
+    try {
+      const res = await fetch('/api/schools')
+      if (res.ok) {
+        const data = await res.json()
+        setSchools(data.schools)
+      }
+    } catch (error) {
+      console.error('Failed to fetch schools:', error)
     }
   }
 
@@ -84,6 +106,7 @@ export default function UserManagement() {
 
   const handleEditUser = (user: User) => {
     setEditingUser(user)
+    setEditingSchoolId(user.schoolId || "")
     setIsEditDialogOpen(true)
   }
 
@@ -91,6 +114,7 @@ export default function UserManagement() {
     if (!editingUser) return
 
     try {
+      // 기본 정보 업데이트
       const res = await fetch(`/api/admin/users/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -100,14 +124,33 @@ export default function UserManagement() {
         })
       })
 
-      if (res.ok) {
-        fetchUsers()
-        setIsEditDialogOpen(false)
-        setEditingUser(null)
-      } else {
+      if (!res.ok) {
         const data = await res.json()
         alert(data.error || '사용자 정보 수정에 실패했습니다.')
+        return
       }
+
+      // 학교 정보 업데이트 (학생인 경우에만)
+      if (editingUser.role === 'STUDENT' && editingSchoolId !== editingUser.schoolId) {
+        const schoolRes = await fetch(`/api/admin/students/${editingUser.id}/school`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            schoolId: editingSchoolId
+          })
+        })
+
+        if (!schoolRes.ok) {
+          const data = await schoolRes.json()
+          alert(data.error || '학교 정보 수정에 실패했습니다.')
+          return
+        }
+      }
+
+      fetchUsers()
+      setIsEditDialogOpen(false)
+      setEditingUser(null)
+      setEditingSchoolId("")
     } catch (error) {
       console.error('Failed to update user:', error)
       alert('사용자 정보 수정 중 오류가 발생했습니다.')
@@ -303,6 +346,29 @@ export default function UserManagement() {
                   </SelectContent>
                 </Select>
               </div>
+              {editingUser.role === 'STUDENT' && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="school" className="text-right">
+                    학교
+                  </Label>
+                  <Select
+                    value={editingSchoolId}
+                    onValueChange={setEditingSchoolId}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="학교를 선택하세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">없음</SelectItem>
+                      {schools.map((school) => (
+                        <SelectItem key={school.id} value={school.id}>
+                          {school.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           )}
           <DialogFooter>
