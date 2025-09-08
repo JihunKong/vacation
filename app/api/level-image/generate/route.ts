@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       vitality: profile.vitality,
       totalXP: profile.totalXP,
       totalMinutes: profile.totalMinutes,
-      name: user.name || undefined
+      name: (profile as any).user?.name || undefined
     };
 
     // 이미지 생성
