@@ -90,7 +90,9 @@ async function generateKimSionCard() {
             intelligence: user.studentProfile.intelligence,
             dexterity: user.studentProfile.dexterity,
             charisma: user.studentProfile.charisma,
-            vitality: user.studentProfile.vitality
+            vitality: user.studentProfile.vitality,
+            totalXP: user.studentProfile.totalXP,
+            totalMinutes: user.studentProfile.totalMinutes
           }
         })
 
