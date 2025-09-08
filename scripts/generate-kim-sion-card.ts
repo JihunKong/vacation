@@ -27,12 +27,12 @@ async function generateKimSionCard() {
     }
 
     console.log(`학생 발견: ${user.name} (${user.email})`)
-    console.log(`현재 레벨: ${user.studentProfile.level}`)
-    console.log(`스텟 - STR: ${user.studentProfile.strength}, INT: ${user.studentProfile.intelligence}, DEX: ${user.studentProfile.dexterity}, CHA: ${user.studentProfile.charisma}, VIT: ${user.studentProfile.vitality}`)
+    console.log(`현재 레벨: ${user.studentProfile!.level}`)
+    console.log(`스텟 - STR: ${user.studentProfile!.strength}, INT: ${user.studentProfile!.intelligence}, DEX: ${user.studentProfile!.dexterity}, CHA: ${user.studentProfile!.charisma}, VIT: ${user.studentProfile!.vitality}`)
 
     // 10레벨 단위 체크
     const milestones = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-    const currentMilestones = milestones.filter(m => m <= user.studentProfile.level)
+    const currentMilestones = milestones.filter(m => m <= user.studentProfile!.level)
 
     if (currentMilestones.length === 0) {
       console.log('아직 10레벨에 도달하지 않았습니다.')
@@ -58,22 +58,24 @@ async function generateKimSionCard() {
       console.log(`\n${milestone}레벨 이미지 생성 중...`)
 
       try {
-        // CharacterStats 객체 생성
+        // CharacterStats 객체 생성 - milestone 레벨로 설정
         const stats: CharacterStats = {
-          level: user.studentProfile.level,
+          level: milestone,  // 마일스톤 레벨로 설정
           strength: user.studentProfile.strength,
           intelligence: user.studentProfile.intelligence,
           dexterity: user.studentProfile.dexterity,
           charisma: user.studentProfile.charisma,
           vitality: user.studentProfile.vitality,
-          name: user.name
+          totalXP: user.studentProfile.totalXP,
+          totalMinutes: user.studentProfile.totalMinutes,
+          name: user.name || undefined
         }
 
         // 이미지 생성
-        const imageUrl = await generateLevelImage(stats, milestone)
+        const result = await generateLevelImage(stats)
 
-        if (!imageUrl) {
-          console.error(`❌ ${milestone}레벨 이미지 생성 실패`)
+        if (!result.success || !result.imageUrl) {
+          console.error(`❌ ${milestone}레벨 이미지 생성 실패: ${result.error}`)
           continue
         }
 
@@ -82,7 +84,7 @@ async function generateKimSionCard() {
           data: {
             studentId: user.studentProfile.id,
             level: milestone,
-            imageUrl: imageUrl,
+            imageUrl: result.imageUrl!,
             prompt: `Level ${milestone} character card`,
             stats: {
               level: user.studentProfile.level,
