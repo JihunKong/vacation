@@ -86,14 +86,11 @@ async function generateKimSionCard() {
             level: milestone,
             imageUrl: result.imageUrl!,
             prompt: `Level ${milestone} character card`,
-            stats: {
-              level: user.studentProfile.level,
-              strength: user.studentProfile.strength,
-              intelligence: user.studentProfile.intelligence,
-              dexterity: user.studentProfile.dexterity,
-              charisma: user.studentProfile.charisma,
-              vitality: user.studentProfile.vitality
-            }
+            strength: user.studentProfile.strength,
+            intelligence: user.studentProfile.intelligence,
+            dexterity: user.studentProfile.dexterity,
+            charisma: user.studentProfile.charisma,
+            vitality: user.studentProfile.vitality
           }
         })
 
