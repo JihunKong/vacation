@@ -50,7 +50,13 @@ function getRandomCharacterType(): { type: string; description: string } {
 }
 
 // 능력치 기반 캐릭터 설명 생성
-function generateCharacterDescription(stats: CharacterStats): string {
+function generateCharacterDescription(stats: CharacterStats): {
+  characterType: string;
+  characterDescription: string;
+  characterClass: string;
+  characterStyle: string;
+  levelEffect: string;
+} {
   const { level, strength, intelligence, dexterity, charisma, vitality } = stats;
   
   // 랜덤 캐릭터 타입 선택
