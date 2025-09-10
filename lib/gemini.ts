@@ -14,45 +14,89 @@ export interface CharacterStats {
   name?: string;
 }
 
+// 랜덤 캐릭터 타입 선택
+function getRandomCharacterType(): { type: string; description: string } {
+  const characterTypes = [
+    // 인간형 (성별 다양화)
+    { type: "Human Male", description: "young male student hero" },
+    { type: "Human Female", description: "young female student hero" },
+    { type: "Human Non-binary", description: "young non-binary student hero" },
+    
+    // 동물 캐릭터
+    { type: "Cat Warrior", description: "adorable cat student with human-like posture" },
+    { type: "Wolf Scholar", description: "wise wolf student with scholarly appearance" },
+    { type: "Fox Mage", description: "clever fox student with magical abilities" },
+    { type: "Dragon Student", description: "young dragon student in humanoid form" },
+    { type: "Owl Sage", description: "intelligent owl student with wise demeanor" },
+    { type: "Bear Guardian", description: "strong bear student with protective nature" },
+    { type: "Rabbit Speedster", description: "quick rabbit student with energetic pose" },
+    
+    // 과일/식물 캐릭터
+    { type: "Apple Scholar", description: "cute apple character with student accessories" },
+    { type: "Strawberry Mage", description: "sweet strawberry character with magical powers" },
+    { type: "Pineapple Warrior", description: "tough pineapple character with armor" },
+    { type: "Cherry Twin", description: "twin cherry characters working together" },
+    { type: "Sunflower Healer", description: "bright sunflower character with healing aura" },
+    
+    // 사물/원소 캐릭터
+    { type: "Book Spirit", description: "living book character with pages as wings" },
+    { type: "Crystal Guardian", description: "mystical crystal being with gem-like appearance" },
+    { type: "Star Student", description: "star-shaped character with celestial glow" },
+    { type: "Clock Keeper", description: "mechanical clock character with time powers" },
+    { type: "Pencil Warrior", description: "heroic pencil character with writing powers" }
+  ];
+  
+  return characterTypes[Math.floor(Math.random() * characterTypes.length)];
+}
+
 // 능력치 기반 캐릭터 설명 생성
 function generateCharacterDescription(stats: CharacterStats): string {
   const { level, strength, intelligence, dexterity, charisma, vitality } = stats;
   
+  // 랜덤 캐릭터 타입 선택
+  const characterType = getRandomCharacterType();
+  
   // 주요 스탯 결정
   const maxStat = Math.max(strength, intelligence, dexterity, charisma, vitality);
-  let characterClass = "Balanced Hero";
-  let characterStyle = "well-rounded";
+  let characterClass = "Balanced Student";
+  let characterStyle = "well-rounded abilities";
   
   if (intelligence === maxStat) {
     characterClass = "Arcane Scholar";
-    characterStyle = "magical aura, glowing books, mystical symbols";
+    characterStyle = "magical aura, glowing books, mystical symbols, scholarly accessories";
   } else if (strength === maxStat) {
     characterClass = "Mighty Warrior";
-    characterStyle = "muscular build, heavy armor, powerful stance";
+    characterStyle = "strong build, protective gear, powerful stance, athletic appearance";
   } else if (dexterity === maxStat) {
-    characterClass = "Swift Rogue";
-    characterStyle = "agile pose, light armor, dynamic movement";
+    characterClass = "Swift Adventurer";
+    characterStyle = "agile pose, light equipment, dynamic movement, quick reflexes";
   } else if (charisma === maxStat) {
     characterClass = "Charismatic Leader";
-    characterStyle = "confident smile, radiant presence, leadership aura";
+    characterStyle = "confident expression, radiant presence, leadership aura, inspiring pose";
   } else if (vitality === maxStat) {
     characterClass = "Resilient Guardian";
-    characterStyle = "sturdy build, protective stance, enduring spirit";
+    characterStyle = "sturdy appearance, protective stance, enduring spirit, healthy glow";
   }
   
   // 레벨에 따른 효과
   let levelEffect = "";
   if (level >= 40) {
-    levelEffect = "legendary golden aura, divine light effects, epic background";
+    levelEffect = "legendary golden aura, divine light effects, epic background, masterful equipment";
   } else if (level >= 30) {
-    levelEffect = "heroic silver glow, advanced equipment, dramatic lighting";
+    levelEffect = "heroic silver glow, advanced accessories, dramatic lighting, skilled appearance";
   } else if (level >= 20) {
-    levelEffect = "bronze energy field, quality gear, confident pose";
+    levelEffect = "bronze energy field, quality gear, confident pose, experienced look";
   } else {
-    levelEffect = "beginner's enthusiasm, basic equipment, hopeful expression";
+    levelEffect = "beginner's enthusiasm, basic equipment, hopeful expression, eager to learn";
   }
   
-  return `${characterClass} with ${characterStyle}, ${levelEffect}`;
+  return {
+    characterType: characterType.type,
+    characterDescription: characterType.description,
+    characterClass,
+    characterStyle,
+    levelEffect
+  };
 }
 
 // 이미지 생성 프롬프트 생성
@@ -60,25 +104,39 @@ export function generateImagePrompt(stats: CharacterStats): string {
   const characterDesc = generateCharacterDescription(stats);
   const totalHours = Math.floor(stats.totalMinutes / 60);
   
-  return `Create a high-quality anime/manga style character card for a Level ${stats.level} student hero.
+  return `Create a high-quality anime/manga style character card for a Level ${stats.level} student.
 
 Character Details:
-- Class: ${characterDesc}
+- Type: ${characterDesc.characterType} - ${characterDesc.characterDescription}
+- Class: ${characterDesc.characterClass}
+- Style: ${characterDesc.characterStyle}
+- Level Effects: ${characterDesc.levelEffect}
 - Stats Display: STR ${stats.strength} | INT ${stats.intelligence} | DEX ${stats.dexterity} | CHA ${stats.charisma} | VIT ${stats.vitality}
-- Experience: ${stats.totalXP} XP earned through ${totalHours} hours of dedication
+- Experience: ${stats.totalXP} XP earned through ${totalHours} hours of study
 
 Visual Requirements:
-- Full body character in heroic pose
-- Elegant RPG-style card frame with ornate borders
-- Level ${stats.level} prominently displayed at the top
-- Stat bars showing the five attributes
-- Fantasy school/academy background
-- Color scheme based on level tier (Bronze 10-19, Silver 20-29, Gold 30-39, Legendary 40+)
-- Inspirational and motivational atmosphere
-- Clean, professional game card design
-- Korean RPG/Manhwa art style influence
+- Character should be a ${characterDesc.characterDescription} in a heroic/academic pose
+- Elegant RPG-style card frame with ornate borders and decorative elements
+- Level ${stats.level} prominently displayed at the top in bold numbers
+- Stat bars or icons showing the five attributes (STR, INT, DEX, CHA, VIT)
+- Fantasy academy/magical school background with books, scrolls, or study elements
+- Color scheme based on level tier:
+  * Bronze theme (10-19): Warm browns and golds
+  * Silver theme (20-29): Cool silvers and blues  
+  * Gold theme (30-39): Rich golds and purples
+  * Legendary theme (40+): Rainbow and divine colors
+- Inspirational and motivational atmosphere with sparkles and energy effects
+- Clean, professional trading card game design
+- Korean webtoon/manhwa art style with vibrant colors
+- Include study-related props or magical academic items appropriate to the character type
 
-The card should inspire students to continue their learning journey!`;
+Art Style Notes:
+- If animal character: anthropomorphic with student uniform or academic robes
+- If fruit/plant character: cute chibi style with face and limbs, wearing study accessories
+- If object character: personified with cute face, eyes, and student gear
+- If human character: diverse representation with appropriate gender expression
+
+The card should inspire students to continue their learning journey and make studying feel like an adventure!`;
 }
 
 // 이미지 생성 및 저장
