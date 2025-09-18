@@ -113,9 +113,12 @@ export async function PUT(req: NextRequest) {
     
     // 처음 설정 시 역할 선택 가능
     if (!existingUser.schoolId) {
-      if (role === 'TEACHER' && !existingUser.studentProfile) {
+      // 이미 관리자에 의해 교사로 승급된 경우 허용
+      if (role === 'TEACHER' && existingUser.role === 'TEACHER') {
         userRole = 'TEACHER'
-      } else if (role === 'TEACHER' && existingUser.studentProfile) {
+      } else if (role === 'TEACHER' && !existingUser.studentProfile) {
+        userRole = 'TEACHER'
+      } else if (role === 'TEACHER' && existingUser.studentProfile && existingUser.role !== 'TEACHER') {
         return NextResponse.json(
           { error: "이미 학생으로 활동 중인 계정은 교사로 변경할 수 없습니다." },
           { status: 400 }

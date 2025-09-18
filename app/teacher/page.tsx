@@ -17,7 +17,31 @@ export default async function TeacherDashboard() {
   })
   
   if (!teacher?.school) {
-    return <div>학교 정보를 찾을 수 없습니다.</div>
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold tracking-tight">학교 설정이 필요합니다</h2>
+          <p className="text-muted-foreground mt-2">
+            교사 대시보드를 이용하기 위해 먼저 학교 정보를 설정해주세요.
+          </p>
+        </div>
+
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <div className="text-sm text-muted-foreground">
+                학교를 설정하면 같은 학교 학생들의 학습 현황을 확인할 수 있습니다.
+              </div>
+              <Link href="/dashboard/profile" className="block w-full">
+                <div className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
+                  학교 설정하기
+                </div>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
   
   // 같은 학교의 학생 통계

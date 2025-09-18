@@ -38,6 +38,12 @@ export default function TeacherReportsPage() {
   const fetchStats = async () => {
     try {
       const res = await fetch("/api/teacher/reports")
+      if (res.status === 403) {
+        // 교사 권한이 없거나 학교 정보가 없는 경우
+        setStats(null)
+        setLoading(false)
+        return
+      }
       if (!res.ok) throw new Error("Failed to fetch stats")
       const data = await res.json()
       setStats(data)
@@ -92,8 +98,29 @@ export default function TeacherReportsPage() {
 
   if (!stats) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">통계 데이터를 불러올 수 없습니다.</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold tracking-tight">학교 설정이 필요합니다</h2>
+          <p className="text-muted-foreground mt-2">
+            학교 보고서를 생성하기 위해 먼저 학교 정보를 설정해주세요.
+          </p>
+        </div>
+
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <div className="text-sm text-muted-foreground">
+                학교를 설정하면 학생들의 활동 보고서를 생성할 수 있습니다.
+              </div>
+              <Button
+                onClick={() => window.location.href = '/dashboard/profile'}
+                className="w-full"
+              >
+                학교 설정하기
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }

@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
+          name: user.name || user.email.split('@')[0],
           role: user.role,
         }
       }
@@ -96,6 +96,8 @@ export const authOptions: NextAuthOptions = {
           })
           
           if (user) {
+            // 데이터베이스의 최신 role 정보로 세션 업데이트
+            session.user.role = user.role
             session.user.hasProfile = !!user.studentProfile
             // Ensure profile exists for Google OAuth users
             if (!user.studentProfile && user.email) {

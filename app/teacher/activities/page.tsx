@@ -56,9 +56,45 @@ async function getTeacherActivities(teacherId: string) {
 
 export default async function TeacherActivitiesPage() {
   const session = await getServerSession(authOptions)
-  
+
   if (!session?.user?.id) {
     redirect("/login")
+  }
+
+  // 교사의 학교 정보 확인
+  const teacher = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { school: true }
+  })
+
+  // 학교 정보가 없으면 설정 안내
+  if (!teacher?.school) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold tracking-tight">학교 설정이 필요합니다</h2>
+          <p className="text-muted-foreground mt-2">
+            학생 활동을 모니터링하기 위해 먼저 학교 정보를 설정해주세요.
+          </p>
+        </div>
+
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <div className="text-sm text-muted-foreground">
+                학교를 설정하면 같은 학교 학생들의 학습 활동을 모니터링할 수 있습니다.
+              </div>
+              <button
+                onClick={() => window.location.href = '/dashboard/profile'}
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md text-sm font-medium"
+              >
+                학교 설정하기
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   const activities = await getTeacherActivities(session.user.id)
