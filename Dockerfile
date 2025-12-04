@@ -7,7 +7,8 @@ WORKDIR /app
 # Copy package files and prisma schema
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
-RUN npm ci --omit=dev
+# Install ALL dependencies for build (including autoprefixer, postcss, etc.)
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM node:20-alpine AS builder
