@@ -6,7 +6,7 @@
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
     "build": "node scripts/check-db.js && prisma generate && next build",
-    "start": "next start",
+    "start": "node scripts/init-level-cards.js && next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
