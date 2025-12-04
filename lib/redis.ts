@@ -40,6 +40,25 @@ export function getRedis(): Redis | null {
 // 메모리 저장소 (Redis가 없을 때 대체)
 const memoryStore = new Map<string, { data: any, expireAt: number }>()
 
+// 메모리 저장소 자동 정리 (5분마다 실행)
+if (typeof window === 'undefined') { // 서버 사이드에서만 실행
+  setInterval(() => {
+    const now = Date.now()
+    let cleanedCount = 0
+
+    for (const [key, value] of memoryStore.entries()) {
+      if (value.expireAt <= now) {
+        memoryStore.delete(key)
+        cleanedCount++
+      }
+    }
+
+    if (cleanedCount > 0) {
+      console.log(`[Redis Fallback] Cleaned up ${cleanedCount} expired entries from memory store`)
+    }
+  }, 300000) // 5분마다 정리
+}
+
 // 타이머 관련 유틸리티 함수들
 export const TimerService = {
   // 타이머 세션 저장

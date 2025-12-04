@@ -306,7 +306,7 @@ export default function SchoolManagement() {
               </Label>
               <Select value={newSchoolType} onValueChange={setNewSchoolType}>
                 <SelectTrigger className="col-span-3">
-                  <SelectValue />
+                  <SelectValue placeholder="학교 유형을 선택하세요" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ELEMENTARY">초등학교</SelectItem>
@@ -369,12 +369,12 @@ export default function SchoolManagement() {
                 <Label htmlFor="edit-type" className="text-right">
                   학교 유형
                 </Label>
-                <Select 
-                  value={editingSchool.schoolType} 
+                <Select
+                  value={editingSchool.schoolType}
                   onValueChange={(value) => setEditingSchool({ ...editingSchool, schoolType: value })}
                 >
                   <SelectTrigger className="col-span-3">
-                    <SelectValue />
+                    <SelectValue placeholder="학교 유형을 선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ELEMENTARY">초등학교</SelectItem>

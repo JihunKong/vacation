@@ -110,7 +110,7 @@ export default function GrowthCharts() {
             <div className="flex gap-2">
               <Select value={period} onValueChange={(v: any) => setPeriod(v)}>
                 <SelectTrigger className="w-32">
-                  <SelectValue />
+                  <SelectValue placeholder="기간" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="daily">일간</SelectItem>
@@ -120,7 +120,7 @@ export default function GrowthCharts() {
               </Select>
               <Select value={metric} onValueChange={(v: any) => setMetric(v)}>
                 <SelectTrigger className="w-32">
-                  <SelectValue />
+                  <SelectValue placeholder="지표" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="xp">XP</SelectItem>

@@ -120,7 +120,7 @@ export default function SignInPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">
-            🌱 성장닷컴
+            🌱 스터디로그
           </CardTitle>
           <CardDescription className="mt-2 text-lg">
             매일의 학습을 기록하고 성장하세요!

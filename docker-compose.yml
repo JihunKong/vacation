@@ -41,6 +41,34 @@ services:
       timeout: 5s
       retries: 5
 
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: studylog_app
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/studylog_db
+      - REDIS_URL=redis://redis:6379
+      - NEXTAUTH_URL=http://localhost:3002
+      - NEXTAUTH_SECRET=your-nextauth-secret-key-here-change-in-production
+      - NODE_ENV=production
+    ports:
+      - "3002:3000"
+    networks:
+      - studylog_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   postgres_data:
     driver: local

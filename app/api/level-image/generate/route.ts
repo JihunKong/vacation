@@ -7,18 +7,33 @@ import { generateLevelImage, CharacterStats } from '@/lib/gemini';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { level, studentId, serverToken } = body;
+    const { level, studentId, userEmail, serverToken } = body;
 
     let profile;
 
     // 서버 사이드 요청인 경우 (내부 API 호출)
-    if (serverToken === process.env.NEXTAUTH_SECRET && studentId) {
-      profile = await prisma.studentProfile.findUnique({
-        where: { id: studentId },
-        include: {
-          user: true
+    if (serverToken === process.env.NEXTAUTH_SECRET && (studentId || userEmail)) {
+      if (studentId) {
+        // studentId로 직접 조회
+        profile = await prisma.studentProfile.findUnique({
+          where: { id: studentId },
+          include: {
+            user: true
+          }
+        });
+      } else if (userEmail) {
+        // userEmail로 사용자 찾아서 studentProfile 조회
+        const user = await prisma.user.findUnique({
+          where: { email: userEmail },
+          include: {
+            studentProfile: true
+          }
+        });
+        
+        if (user?.studentProfile) {
+          profile = { ...user.studentProfile, user };
         }
-      });
+      }
 
       if (!profile) {
         return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -59,7 +74,10 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    if (existingImage && !req.nextUrl.searchParams.get('regenerate')) {
+    // forceGenerate 파라미터로도 재생성 가능하도록 수정
+    const shouldRegenerate = req.nextUrl.searchParams.get('regenerate') || body.forceGenerate;
+    
+    if (existingImage && !shouldRegenerate) {
       return NextResponse.json({
         success: true,
         image: existingImage,
@@ -67,7 +85,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 캐릭터 스탯 준비
+    // 캐릭터 스탯 준비 (개인정보 보호를 위해 이름 제외)
     const stats: CharacterStats = {
       level,
       strength: profile.strength,
@@ -76,8 +94,8 @@ export async function POST(req: NextRequest) {
       charisma: profile.charisma,
       vitality: profile.vitality,
       totalXP: profile.totalXP,
-      totalMinutes: profile.totalMinutes,
-      name: (profile as any).user?.name || undefined
+      totalMinutes: profile.totalMinutes
+      // name 필드는 개인정보 보호를 위해 제거
     };
 
     // 이미지 생성

@@ -5,27 +5,27 @@ import AuthSessionProvider from '@/providers/session-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '성장닷컴 - 게이미피케이션 학습 관리 시스템',
+  title: '스터디로그 - 게이미피케이션 학습 관리 시스템',
   description: '매일의 학습을 기록하고 게임처럼 즐기며 성장하는 학습 관리 플랫폼',
-  keywords: '학습 관리, 성장닷컴, 게이미피케이션, 학습 기록, 아바타 성장',
-  authors: [{ name: '성장닷컴 Team' }],
-  creator: '성장닷컴',
-  publisher: '성장닷컴',
+  keywords: '학습 관리, 스터디로그, 게이미피케이션, 학습 기록, 아바타 성장',
+  authors: [{ name: '스터디로그 Team' }],
+  creator: '스터디로그',
+  publisher: '스터디로그',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
   openGraph: {
-    title: '성장닷컴',
+    title: '스터디로그',
     description: '매일의 학습을 기록하고 게임처럼 즐기며 성장하세요!',
     type: 'website',
     locale: 'ko_KR',
-    siteName: '성장닷컴',
+    siteName: '스터디로그',
   },
   twitter: {
     card: 'summary_large_image',
-    title: '성장닷컴',
+    title: '스터디로그',
     description: '매일의 학습을 기록하고 게임처럼 즐기며 성장하세요!',
   },
   viewport: {

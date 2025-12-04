@@ -10,7 +10,7 @@ export default async function AdminLayout({
   const session = await getServerSession(authOptions)
   
   // 관리자가 아닌 경우 리다이렉트
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || !session.user || session.user.role !== 'ADMIN') {
     redirect('/')
   }
 

@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -177,15 +177,14 @@ export async function generateLevelImage(stats: CharacterStats): Promise<{
       };
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-image-preview" });
     const prompt = generateImagePrompt(stats);
     
     console.log("Generating image with Gemini prompt:", prompt);
     
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image-preview",
-      contents: prompt,
-    });
+    const result = await model.generateContent([prompt]);
+    const response = await result.response;
     
     // 이미지 데이터 추출
     if (response.candidates && response.candidates[0]?.content?.parts) {
@@ -319,7 +318,7 @@ function createPlaceholderSVG(stats: CharacterStats): string {
     
     <!-- Footer -->
     <text x="256" y="470" font-family="Arial, sans-serif" font-size="10" fill="#D1D5DB" text-anchor="middle">
-      성장닷컴 Level Card
+      스터디로그 Level Card
     </text>
   </svg>`;
 }

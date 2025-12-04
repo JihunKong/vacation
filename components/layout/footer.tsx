@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-sm text-gray-600">
-            © 2025 성장닷컴. All rights reserved.
+            © 2025 스터디로그. All rights reserved.
           </div>
           <div className="flex items-center gap-6 text-sm">
             <Link href="/terms" className="text-gray-600 hover:text-gray-900 hover:underline">

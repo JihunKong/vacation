@@ -79,7 +79,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
             </SheetTrigger>
             <SheetContent side="left" className="w-[280px] sm:w-[350px]">
               <SheetHeader>
-                <SheetTitle>🌱 성장닷컴</SheetTitle>
+                <SheetTitle>🌱 스터디로그</SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-4 mt-8">
                 {navItems.map((item) => {
@@ -125,7 +125,7 @@ export function DashboardNav({ user }: DashboardNavProps) {
           </Sheet>
           
           <Link href="/dashboard" className="text-xl font-bold">
-            🌱 성장닷컴
+            🌱 스터디로그
           </Link>
           
           {/* 데스크톱 네비게이션 */}

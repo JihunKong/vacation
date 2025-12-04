@@ -49,30 +49,33 @@ model User {
   role          Role      @default(STUDENT)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   // 학교 정보
   schoolId      String?
   school        School?   @relation(fields: [schoolId], references: [id])
-  
+
   // 약관 동의 정보
   termsAcceptedAt    DateTime?  // 서비스 이용약관 동의 시간
   privacyAcceptedAt  DateTime?  // 개인정보처리방침 동의 시간
-  
+
   // 학생 프로필
   studentProfile StudentProfile?
-  
+
   // 교사가 작성한 요약
   teacherSummaries Summary[] @relation("TeacherSummaries")
-  
+
   // 좋아요한 레벨 이미지들
   likedLevelImages LevelImageLike[]
-  
+
   // 피드백 관계
   sentFeedbacks    Feedback[] @relation("TeacherFeedbacks")
   receivedFeedbacks Feedback[] @relation("StudentFeedbacks")
-  
+
   // 알림
   notifications    Notification[]
+
+  @@index([schoolId, role])  // 교사 대시보드용: 학교별 학생 조회
+  @@index([role])           // 역할별 사용자 필터링
 }
 
 // 역할 열거형
@@ -129,9 +132,13 @@ model StudentProfile {
   
   // 레벨 이미지
   levelImages     LevelImage[]
-  
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([totalXP])        // 리더보드 정렬용
+  @@index([level])          // 레벨별 쿼리용
+  @@index([currentStreak])  // 연속일수 기반 쿼리용
 }
 
 // 일일 계획
@@ -203,9 +210,15 @@ model Activity {
   
   // 교사 피드백
   feedbacks       Feedback[]
-  
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([studentId, date])     // 일별 활동 조회 (가장 중요)
+  @@index([studentId, createdAt]) // 최근 활동 조회
+  @@index([studentId, category])  // 카테고리별 활동 조회
+  @@index([date])                 // 교사 대시보드: 날짜별 전체 활동
+  @@index([category, date])       // 카테고리별 일별 통계
 }
 
 // 배지/업적
@@ -216,8 +229,11 @@ model Badge {
   
   type            BadgeType
   tier            Int       @default(1) // 1: 브론즈, 2: 실버, 3: 골드
-  
+
   earnedAt        DateTime  @default(now())
+
+  @@index([studentId, type])     // 배지 타입별 조회
+  @@index([studentId, earnedAt]) // 최근 획득 배지 조회
 }
 
 // 배지 타입

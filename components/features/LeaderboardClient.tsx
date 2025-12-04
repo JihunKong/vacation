@@ -94,7 +94,7 @@ export default function LeaderboardClient({ initialData, currentUserId }: { init
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
               <SelectTrigger className="w-48">
-                <SelectValue />
+                <SelectValue placeholder="월 선택" />
               </SelectTrigger>
               <SelectContent>
                 {monthOptions.map(option => (

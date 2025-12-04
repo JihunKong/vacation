@@ -1,0 +1,218 @@
+<svg width="400" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background gradient (Bronze theme with magical glow) -->
+    <radialGradient id="cardBg" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#CD7F32;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Banana body gradient -->
+    <linearGradient id="bananaBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFF99;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#FFFF00;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Banana highlight -->
+    <radialGradient id="bananaHighlight" cx="30%" cy="20%" r="30%">
+      <stop offset="0%" style="stop-color:#FFFACD;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#FFFACD;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Magical aura glow -->
+    <filter id="magicalGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Book gradient -->
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4169E1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E90FF;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Staff gradient -->
+    <linearGradient id="staffGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A0522D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Magical background -->
+  <rect width="400" height="600" fill="url(#cardBg)"/>
+  
+  <!-- Floating magical particles -->
+  <g opacity="0.7">
+    <circle cx="50" cy="120" r="2" fill="#FFD700">
+      <animate attributeName="cy" values="120;80;120" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="350" cy="150" r="1.5" fill="#FF69B4">
+      <animate attributeName="cy" values="150;110;150" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="80" cy="400" r="2.5" fill="#00BFFF">
+      <animate attributeName="cy" values="400;360;400" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="320" cy="450" r="1.8" fill="#9370DB">
+      <animate attributeName="cy" values="450;410;450" dur="2.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Card frame with ornate borders -->
+  <rect x="10" y="10" width="380" height="580" fill="white" rx="20" opacity="0.95"/>
+  <rect x="15" y="15" width="370" height="570" fill="none" stroke="#FFD700" stroke-width="4" rx="15"/>
+  <rect x="20" y="20" width="360" height="560" fill="none" stroke="#CD7F32" stroke-width="2" rx="10"/>
+  
+  <!-- Header with Level display -->
+  <rect x="30" y="30" width="340" height="70" fill="#2C3E50" rx="10"/>
+  <rect x="35" y="35" width="330" height="60" fill="url(#cardBg)" rx="8" opacity="0.3"/>
+  <text x="200" y="58" font-family="Arial Black, sans-serif" font-size="28" font-weight="bold" fill="#FFD700" text-anchor="middle" filter="url(#magicalGlow)">Level 10</text>
+  <text x="200" y="80" font-family="Arial, sans-serif" font-size="14" fill="#FFFACD" text-anchor="middle">🍌 Banana Scholar 🍌</text>
+  <text x="200" y="95" font-family="Arial, sans-serif" font-size="10" fill="#BDC3C7" text-anchor="middle">Arcane Scholar Class</text>
+  
+  <!-- Main Character: Spectacular Banana Scholar -->
+  <g transform="translate(200, 200)">
+    <!-- Magical energy aura behind character -->
+    <circle cx="0" cy="0" r="70" fill="#FFD700" opacity="0.2" filter="url(#magicalGlow)"/>
+    
+    <!-- Banana body (curved like real banana) -->
+    <path d="M -25,-40 Q -30,-10 -20,20 Q -15,35 0,40 Q 15,35 20,20 Q 30,-10 25,-40 Z" fill="url(#bananaBody)" stroke="#FFA500" stroke-width="2"/>
+    <ellipse cx="-8" cy="-15" rx="12" ry="20" fill="url(#bananaHighlight)"/>
+    
+    <!-- Banana tip (brown spots) -->
+    <ellipse cx="-15" cy="35" rx="3" ry="4" fill="#8B4513" opacity="0.6"/>
+    <ellipse cx="10" cy="32" rx="2" ry="3" fill="#8B4513" opacity="0.6"/>
+    <ellipse cx="0" cy="25" rx="1.5" ry="2" fill="#8B4513" opacity="0.5"/>
+    
+    <!-- Wizard hat with magical star -->
+    <path d="M -30,-50 L 30,-50 L 25,-80 L -25,-80 Z" fill="#4B0082"/>
+    <rect x="-30" y="-53" width="60" height="8" fill="#FFD700"/>
+    <circle cx="0" cy="-65" r="5" fill="#FFD700" filter="url(#magicalGlow)"/>
+    <text x="0" y="-60" font-family="Arial" font-size="8" fill="white" text-anchor="middle">⭐</text>
+    
+    <!-- Scholarly eyes with glasses -->
+    <ellipse cx="-8" cy="-10" rx="4" ry="5" fill="white"/>
+    <ellipse cx="8" cy="-10" rx="4" ry="5" fill="white"/>
+    <circle cx="-8" cy="-10" r="2.5" fill="#2C3E50"/>
+    <circle cx="8" cy="-10" r="2.5" fill="#2C3E50"/>
+    <circle cx="-7" cy="-12" r="1" fill="white"/>
+    <circle cx="9" cy="-12" r="1" fill="white"/>
+    
+    <!-- Scholarly glasses -->
+    <circle cx="-8" cy="-10" r="6" fill="none" stroke="#2C3E50" stroke-width="1"/>
+    <circle cx="8" cy="-10" r="6" fill="none" stroke="#2C3E50" stroke-width="1"/>
+    <line x1="2" y1="-10" x2="-2" y2="-10" stroke="#2C3E50" stroke-width="1"/>
+    
+    <!-- Confident smile -->
+    <path d="M -6,5 Q 0,12 6,5" stroke="#2C3E50" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    
+    <!-- Scholarly robes -->
+    <ellipse cx="0" cy="15" rx="35" ry="25" fill="#4B0082" opacity="0.8"/>
+    <ellipse cx="0" cy="10" rx="30" ry="20" fill="#6A5ACD" opacity="0.9"/>
+    <rect x="-25" y="-5" width="50" height="30" fill="#4B0082" opacity="0.7"/>
+    
+    <!-- Magic staff in left hand -->
+    <line x1="-40" y1="-20" x2="-45" y2="25" stroke="url(#staffGrad)" stroke-width="4"/>
+    <circle cx="-42" cy="-25" r="6" fill="#FFD700" filter="url(#magicalGlow)"/>
+    <text x="-42" y="-20" font-family="Arial" font-size="10" fill="white" text-anchor="middle">💎</text>
+    
+    <!-- Floating magical book in right hand -->
+    <g transform="translate(35, 0) rotate(15)">
+      <rect x="-12" y="-8" width="24" height="16" fill="url(#bookGrad)" rx="2"/>
+      <rect x="-10" y="-6" width="20" height="12" fill="#87CEEB" rx="1"/>
+      <line x1="-8" y1="-3" x2="8" y2="-3" stroke="white" stroke-width="0.5"/>
+      <line x1="-8" y1="0" x2="8" y2="0" stroke="white" stroke-width="0.5"/>
+      <line x1="-8" y1="3" x2="8" y2="3" stroke="white" stroke-width="0.5"/>
+    </g>
+    
+    <!-- Magical sparkles around character -->
+    <g filter="url(#magicalGlow)">
+      <text x="45" y="-30" font-family="Arial" font-size="12" fill="#FFD700">✨</text>
+      <text x="-50" y="0" font-family="Arial" font-size="10" fill="#FF69B4">✨</text>
+      <text x="30" y="35" font-family="Arial" font-size="8" fill="#00BFFF">✨</text>
+      <text x="-35" y="30" font-family="Arial" font-size="14" fill="#9370DB">✨</text>
+      <text x="0" y="-35" font-family="Arial" font-size="6" fill="#FFD700">✨</text>
+    </g>
+    
+    <!-- Floating magical runes -->
+    <g opacity="0.7">
+      <text x="55" y="10" font-family="Arial" font-size="16" fill="#FFD700" transform="rotate(45)">ᚱ</text>
+      <text x="-55" y="-15" font-family="Arial" font-size="14" fill="#9370DB" transform="rotate(-30)">ᚹ</text>
+      <text x="25" y="-45" font-family="Arial" font-size="12" fill="#FF69B4" transform="rotate(60)">ᚦ</text>
+    </g>
+  </g>
+  
+  <!-- Stats section with enhanced design -->
+  <rect x="30" y="320" width="340" height="90" fill="#F8F9FA" rx="10" opacity="0.95"/>
+  <rect x="35" y="325" width="330" height="80" fill="none" stroke="#FFD700" stroke-width="2" rx="8"/>
+  <text x="200" y="345" font-family="Arial Black, sans-serif" font-size="16" font-weight="bold" fill="#2C3E50" text-anchor="middle">⚔️ 능력치 ⚔️</text>
+  
+  <!-- Enhanced stat bars -->
+  <g transform="translate(50, 355)">
+    <!-- STR: 19 -->
+    <text x="0" y="12" font-family="Arial Bold" font-size="11" fill="#E74C3C" font-weight="bold">STR</text>
+    <rect x="25" y="2" width="50" height="10" fill="#BDC3C7" rx="5"/>
+    <rect x="25" y="2" width="9.5" height="10" fill="#E74C3C" rx="5"/>
+    <text x="80" y="12" font-family="Arial Bold" font-size="11" fill="#2C3E50" font-weight="bold">19</text>
+    
+    <!-- INT: 127 (MAXED!) -->
+    <text x="120" y="12" font-family="Arial Bold" font-size="11" fill="#3498DB" font-weight="bold">INT</text>
+    <rect x="145" y="2" width="50" height="10" fill="#BDC3C7" rx="5"/>
+    <rect x="145" y="2" width="50" height="10" fill="#3498DB" rx="5"/>
+    <rect x="145" y="2" width="50" height="10" fill="#FFD700" rx="5" opacity="0.5" filter="url(#magicalGlow)"/>
+    <text x="200" y="12" font-family="Arial Bold" font-size="11" fill="#2C3E50" font-weight="bold">127</text>
+    <text x="210" y="12" font-family="Arial" font-size="8" fill="#FFD700">🌟</text>
+    
+    <!-- DEX: 10 -->
+    <text x="240" y="12" font-family="Arial Bold" font-size="11" fill="#F39C12" font-weight="bold">DEX</text>
+    <rect x="265" y="2" width="50" height="10" fill="#BDC3C7" rx="5"/>
+    <rect x="265" y="2" width="5" height="10" fill="#F39C12" rx="5"/>
+    <text x="320" y="12" font-family="Arial Bold" font-size="11" fill="#2C3E50" font-weight="bold">10</text>
+    
+    <!-- CHA: 16 -->
+    <text x="0" y="32" font-family="Arial Bold" font-size="11" fill="#9B59B6" font-weight="bold">CHA</text>
+    <rect x="25" y="22" width="50" height="10" fill="#BDC3C7" rx="5"/>
+    <rect x="25" y="22" width="8" height="10" fill="#9B59B6" rx="5"/>
+    <text x="80" y="32" font-family="Arial Bold" font-size="11" fill="#2C3E50" font-weight="bold">16</text>
+    
+    <!-- VIT: 10 -->
+    <text x="120" y="32" font-family="Arial Bold" font-size="11" fill="#27AE60" font-weight="bold">VIT</text>
+    <rect x="145" y="22" width="50" height="10" fill="#BDC3C7" rx="5"/>
+    <rect x="145" y="22" width="5" height="10" fill="#27AE60" rx="5"/>
+    <text x="200" y="32" font-family="Arial Bold" font-size="11" fill="#2C3E50" font-weight="bold">10</text>
+  </g>
+  
+  <!-- Experience & Time with magical theme -->
+  <rect x="30" y="430" width="340" height="70" fill="url(#cardBg)" rx="10" opacity="0.9"/>
+  <rect x="35" y="435" width="330" height="60" fill="none" stroke="#FFD700" stroke-width="2" rx="8"/>
+  <text x="200" y="455" font-family="Arial Black, sans-serif" font-size="14" fill="white" text-anchor="middle" filter="url(#magicalGlow)">
+    ✨ 1,686 XP • 17시간 학습 ✨
+  </text>
+  <text x="200" y="475" font-family="Arial, sans-serif" font-size="12" fill="#FFFACD" text-anchor="middle">
+    🌟 마법같은 학습 여정의 시작! 🌟
+  </text>
+  <text x="200" y="490" font-family="Arial, sans-serif" font-size="10" fill="#F0E68C" text-anchor="middle">
+    "지식의 힘으로 세상을 바꾸는 바나나 학자"
+  </text>
+  
+  <!-- Student name with glowing effect -->
+  <text x="200" y="530" font-family="Arial Black, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50" text-anchor="middle" filter="url(#magicalGlow)">김시온</text>
+  <text x="200" y="550" font-family="Arial, sans-serif" font-size="14" fill="#FFD700" text-anchor="middle">🎉 Level 10 달성! 🎉</text>
+  
+  <!-- Enhanced footer -->
+  <text x="200" y="580" font-family="Arial, sans-serif" font-size="10" fill="#7F8C8D" text-anchor="middle">🍌 스터디로그 Spectacular Character Card 🍌</text>
+  
+  <!-- Corner decorations -->
+  <g opacity="0.4">
+    <circle cx="50" cy="50" r="4" fill="#FFD700"/>
+    <circle cx="350" cy="50" r="4" fill="#FFD700"/>
+    <circle cx="50" cy="550" r="4" fill="#FFD700"/>
+    <circle cx="350" cy="550" r="4" fill="#FFD700"/>
+  </g>
+</svg>

@@ -2,7 +2,7 @@ import PomodoroTimer from '@/components/features/PomodoroTimer'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '뽀모도로 타이머 | 성장닷컴',
+  title: '뽀모도로 타이머 | 스터디로그',
   description: '집중력을 높이는 뽀모도로 타이머로 효율적인 학습하기'
 }
 

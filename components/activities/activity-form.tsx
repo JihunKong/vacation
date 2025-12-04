@@ -209,7 +209,7 @@ export function ActivityForm({ studentProfileId, todayPlan, currentStreak }: Act
               onValueChange={(value) => setFormData({ ...formData, category: value as Category })}
             >
               <SelectTrigger id="category">
-                <SelectValue />
+                <SelectValue placeholder="카테고리를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
                 {CATEGORY_OPTIONS.map(option => (

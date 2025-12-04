@@ -85,17 +85,24 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // XP와 능력치 계산 (일일 제한 적용)
-    const hasStreak = studentProfile.currentStreak > 0
-    const { xp: xpEarned, statPoints } = calculateStatIncreaseWithLimit(
-      minutes,
-      category as Category,
-      todayMinutesInCategory,
-      hasStreak
-    )
-    
     // 트랜잭션으로 처리
     const result = await prisma.$transaction(async (tx) => {
+      // 트랜잭션 내에서 최신 프로필 정보 재조회
+      const currentProfile = await tx.studentProfile.findUnique({
+        where: { id: studentProfileId }
+      })
+      if (!currentProfile) {
+        throw new Error("Student profile not found")
+      }
+
+      // XP와 능력치 계산 (일일 제한 적용)
+      const hasStreak = currentProfile.currentStreak > 0
+      const { xp: xpEarned, statPoints } = calculateStatIncreaseWithLimit(
+        minutes,
+        category as Category,
+        todayMinutesInCategory,
+        hasStreak
+      )
       // 활동 기록 생성
       const activity = await tx.activity.create({
         data: {
@@ -147,15 +154,15 @@ export async function POST(req: NextRequest) {
             },
           })
 
-          const newStreak = yesterdayPlan 
-            ? studentProfile.currentStreak + 1 
+          const newStreak = yesterdayPlan
+            ? currentProfile.currentStreak + 1
             : 1
 
           await tx.studentProfile.update({
             where: { id: studentProfileId },
             data: {
               currentStreak: newStreak,
-              longestStreak: Math.max(newStreak, studentProfile.longestStreak),
+              longestStreak: Math.max(newStreak, currentProfile.longestStreak),
             },
           })
         }
@@ -216,12 +223,13 @@ export async function POST(req: NextRequest) {
           // 누적 XP로 해당 레벨 범위의 활동 필터링
           let cumulativeXP = 0
           const activitiesInLevelRange: Category[] = []
-          
+
           for (const act of levelActivities) {
-            if (cumulativeXP >= minXP && cumulativeXP < maxXP) {
+            const nextCumulativeXP = cumulativeXP + act.xpEarned
+            if (nextCumulativeXP > minXP && cumulativeXP < maxXP) {
               activitiesInLevelRange.push(act.category)
             }
-            cumulativeXP += act.xpEarned
+            cumulativeXP = nextCumulativeXP
             if (cumulativeXP >= maxXP) break
           }
           

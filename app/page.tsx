@@ -16,7 +16,7 @@ export default async function Home() {
       <main className="flex-1 flex flex-col items-center justify-center p-24">
         <div className="text-center space-y-6 max-w-2xl">
           <h1 className="text-5xl font-bold">
-            🌱 성장닷컴
+            🌱 스터디로그
           </h1>
           <p className="text-xl text-gray-700">
             매일의 학습을 게임처럼 즐기며 성장하세요!

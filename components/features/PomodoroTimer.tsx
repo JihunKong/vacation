@@ -434,7 +434,7 @@ export default function PomodoroTimer() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="시간 선택" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="15">15분</SelectItem>

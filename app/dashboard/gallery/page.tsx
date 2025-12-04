@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import GalleryClient from '@/components/features/GalleryClient'
 
 export const metadata: Metadata = {
-  title: '레벨 갤러리 | 성장닷컴',
+  title: '레벨 갤러리 | 스터디로그',
   description: '학생들의 레벨업 캐릭터 카드를 확인하세요',
 }
 

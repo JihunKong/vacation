@@ -350,7 +350,7 @@ export default function ActivityManagement() {
                   onValueChange={(value) => setEditingActivity({ ...editingActivity, category: value })}
                 >
                   <SelectTrigger className="col-span-3">
-                    <SelectValue />
+                    <SelectValue placeholder="카테고리를 선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="STUDY">📚 학습</SelectItem>

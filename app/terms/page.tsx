@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: '서비스 이용약관 | 성장닷컴',
-  description: '성장닷컴 서비스 이용약관입니다.',
+  title: '서비스 이용약관 | 스터디로그',
+  description: '스터디로그 서비스 이용약관입니다.',
 }
 
 export default function TermsPage() {
@@ -12,7 +12,7 @@ export default function TermsPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-white">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="text-xl font-bold">
-            🌱 성장닷컴
+            🌱 스터디로그
           </Link>
         </div>
       </header>
@@ -28,7 +28,7 @@ export default function TermsPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">제1조 (목적)</h2>
             <p>
-              이 약관은 성장닷컴(이하 &ldquo;회사&rdquo;)이 제공하는 학습 기록 관리 및 게이미피케이션 서비스(이하 &ldquo;서비스&rdquo;)의 이용과 관련하여 
+              이 약관은 스터디로그(이하 &ldquo;회사&rdquo;)이 제공하는 학습 기록 관리 및 게이미피케이션 서비스(이하 &ldquo;서비스&rdquo;)의 이용과 관련하여 
               회사와 회원 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
             </p>
           </section>

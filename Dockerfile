@@ -1,15 +1,16 @@
 # Multi-stage build for Next.js production
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 # Install dependencies only when needed
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
+# Copy package files and prisma schema
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+COPY prisma ./prisma
+RUN npm ci --omit=dev
 
 # Rebuild the source code only when needed
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -22,7 +23,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
 # Production image
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV production

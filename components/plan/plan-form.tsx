@@ -124,7 +124,7 @@ export function PlanForm({ studentProfileId, existingPlan }: PlanFormProps) {
                     onValueChange={(value) => updateItem(index, "category", value as Category)}
                   >
                     <SelectTrigger id={`category-${index}`}>
-                      <SelectValue />
+                      <SelectValue placeholder="카테고리를 선택하세요" />
                     </SelectTrigger>
                     <SelectContent>
                       {CATEGORY_OPTIONS.map(option => (

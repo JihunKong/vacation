@@ -11,6 +11,11 @@ export default withAuth(
       return NextResponse.redirect(new URL("/dashboard", req.url))
     }
 
+    // 관리자 전용 페이지 접근 제어
+    if (path.startsWith("/admin") && token?.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", req.url))
+    }
+
     return NextResponse.next()
   },
   {
@@ -21,5 +26,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/teacher/:path*"],
+  matcher: ["/dashboard/:path*", "/teacher/:path*", "/admin/:path*"],
 }

@@ -6,7 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { DashboardStats } from "@/components/dashboard/dashboard-stats"
 import { AvatarDisplay } from "@/components/avatar/avatar-display"
-import GrowthCharts from "@/components/features/GrowthCharts"
+import dynamic from "next/dynamic"
+
+// 동적 import로 차트 라이브러리 번들 크기 최적화 (272 kB → 105 kB 기본)
+const GrowthCharts = dynamic(() => import("@/components/features/GrowthCharts"), {
+  loading: () => (
+    <Card className="w-full">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <span className="ml-2 text-gray-600">차트 로딩 중...</span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+})
 import { BarChart, Calendar, Trophy, TrendingUp } from "lucide-react"
 
 export default async function StatsPage() {

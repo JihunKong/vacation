@@ -46,7 +46,7 @@ export default function UserManagement() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<User | null>(null)
   const [schools, setSchools] = useState<School[]>([])
-  const [editingSchoolId, setEditingSchoolId] = useState<string>("")
+  const [editingSchoolId, setEditingSchoolId] = useState<string>("none")
   const router = useRouter()
 
   useEffect(() => {
@@ -64,9 +64,16 @@ export default function UserManagement() {
       if (res.ok) {
         const data = await res.json()
         setUsers(data.users)
+      } else if (res.status === 403) {
+        // 권한 없음 - 로그인 페이지로 리다이렉트
+        router.push('/auth/signin?callbackUrl=/admin/users')
+      } else {
+        console.error('API Error:', res.status, res.statusText)
       }
     } catch (error) {
       console.error('Failed to fetch users:', error)
+      // 네트워크 오류 등의 경우 로그인 페이지로 리다이렉트
+      router.push('/auth/signin?callbackUrl=/admin/users')
     } finally {
       setLoading(false)
     }
@@ -106,7 +113,7 @@ export default function UserManagement() {
 
   const handleEditUser = (user: User) => {
     setEditingUser(user)
-    setEditingSchoolId(user.schoolId || "")
+    setEditingSchoolId(user.schoolId || "none")
     setIsEditDialogOpen(true)
   }
 
@@ -131,12 +138,12 @@ export default function UserManagement() {
       }
 
       // 학교 정보 업데이트 (학생인 경우에만)
-      if (editingUser.role === 'STUDENT' && editingSchoolId !== editingUser.schoolId) {
+      if (editingUser.role === 'STUDENT' && (editingSchoolId === "none" ? null : editingSchoolId) !== editingUser.schoolId) {
         const schoolRes = await fetch(`/api/admin/students/${editingUser.id}/school`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            schoolId: editingSchoolId
+            schoolId: editingSchoolId === "none" ? null : editingSchoolId
           })
         })
 
@@ -150,7 +157,7 @@ export default function UserManagement() {
       fetchUsers()
       setIsEditDialogOpen(false)
       setEditingUser(null)
-      setEditingSchoolId("")
+      setEditingSchoolId("none")
     } catch (error) {
       console.error('Failed to update user:', error)
       alert('사용자 정보 수정 중 오류가 발생했습니다.')
@@ -337,7 +344,7 @@ export default function UserManagement() {
                   onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}
                 >
                   <SelectTrigger className="col-span-3">
-                    <SelectValue />
+                    <SelectValue placeholder="역할을 선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="STUDENT">학생</SelectItem>
@@ -359,7 +366,7 @@ export default function UserManagement() {
                       <SelectValue placeholder="학교를 선택하세요" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">없음</SelectItem>
+                      <SelectItem value="none">없음</SelectItem>
                       {schools.map((school) => (
                         <SelectItem key={school.id} value={school.id}>
                           {school.name}

@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: '개인정보처리방침 | 성장닷컴',
-  description: '성장닷컴 서비스의 개인정보처리방침입니다.',
+  title: '개인정보처리방침 | 스터디로그',
+  description: '스터디로그 서비스의 개인정보처리방침입니다.',
 }
 
 export default function PrivacyPage() {
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-white">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="text-xl font-bold">
-            🌱 성장닷컴
+            🌱 스터디로그
           </Link>
         </div>
       </header>
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">제1조 (목적)</h2>
             <p>
-              성장닷컴(이하 &ldquo;회사&rdquo;)은 이용자의 개인정보를 중요시하며, 「개인정보 보호법」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 등 관련 법령을 준수하고 있습니다.
+              스터디로그(이하 &ldquo;회사&rdquo;)은 이용자의 개인정보를 중요시하며, 「개인정보 보호법」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 등 관련 법령을 준수하고 있습니다.
               본 개인정보처리방침은 회사가 제공하는 학습 기록 관리 서비스(이하 &ldquo;서비스&rdquo;)의 이용과 관련하여 회사가 이용자로부터 수집하는 개인정보의 항목, 수집 및 이용 목적, 보유 및 이용 기간, 제3자 제공 등에 관한 사항을 안내드립니다.
             </p>
           </section>
