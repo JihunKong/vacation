@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
       // 오늘 첫 활동인지 확인 (todayActivities가 비어있으면 첫 활동)
       const isFirstActivityToday = todayActivities.length === 0
       
-      // 능력치 업데이트
+      // 능력치 업데이트 (6개 능력치)
       const updatedProfile = await tx.studentProfile.update({
         where: { id: studentProfileId },
         data: {
@@ -179,6 +179,7 @@ export async function POST(req: NextRequest) {
           totalMinutes: { increment: minutes },
           strength: { increment: statPoints.strength || 0 },
           intelligence: { increment: statPoints.intelligence || 0 },
+          wisdom: { increment: statPoints.wisdom || 0 },  // WIS 추가
           dexterity: { increment: statPoints.dexterity || 0 },
           charisma: { increment: statPoints.charisma || 0 },
           vitality: { increment: statPoints.vitality || 0 },
@@ -194,10 +195,11 @@ export async function POST(req: NextRequest) {
                          requiredXP !== updatedProfile.xpForNextLevel
       
       if (needsUpdate) {
-        // 레벨업 시 자동 능력치 증가
+        // 레벨업 시 자동 능력치 증가 (6개 능력치)
         let autoStatIncrease = {
           strength: 0,
           intelligence: 0,
+          wisdom: 0,
           dexterity: 0,
           charisma: 0,
           vitality: 0,
@@ -247,9 +249,10 @@ export async function POST(req: NextRequest) {
             level,
             experience: currentXP, // 현재 레벨에서의 진행도
             xpForNextLevel: requiredXP,
-            // 레벨업 시 자동 능력치 증가 적용
+            // 레벨업 시 자동 능력치 증가 적용 (6개 능력치)
             strength: { increment: autoStatIncrease.strength },
             intelligence: { increment: autoStatIncrease.intelligence },
+            wisdom: { increment: autoStatIncrease.wisdom },
             dexterity: { increment: autoStatIncrease.dexterity },
             charisma: { increment: autoStatIncrease.charisma },
             vitality: { increment: autoStatIncrease.vitality },

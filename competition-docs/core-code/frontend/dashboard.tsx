@@ -73,6 +73,7 @@ export default async function DashboardPage() {
             stats={{
               strength: studentProfile.strength,
               intelligence: studentProfile.intelligence,
+              wisdom: studentProfile.wisdom,
               dexterity: studentProfile.dexterity,
               charisma: studentProfile.charisma,
               vitality: studentProfile.vitality,

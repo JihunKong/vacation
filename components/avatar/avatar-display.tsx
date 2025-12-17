@@ -11,6 +11,7 @@ interface AvatarDisplayProps {
   stats: {
     strength: number
     intelligence: number
+    wisdom: number       // WIS: 지혜 (독서)
     dexterity: number
     charisma: number
     vitality: number
@@ -84,6 +85,7 @@ function getStatColor(stat: StatType): string {
   const colors: Record<StatType, string> = {
     strength: "bg-red-500",
     intelligence: "bg-blue-500",
+    wisdom: "bg-indigo-500",      // WIS: 보라-파랑 계열
     dexterity: "bg-green-500",
     charisma: "bg-purple-500",
     vitality: "bg-orange-500",

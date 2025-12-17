@@ -12,6 +12,7 @@ interface LevelImage {
   imageUrl: string
   strength: number
   intelligence: number
+  wisdom: number        // WIS: 지혜 (독서)
   dexterity: number
   charisma: number
   vitality: number
@@ -34,7 +35,7 @@ interface HallOfFameProps {
 
 export default function HallOfFame({ levelImage, onLike }: HallOfFameProps) {
   const totalHours = Math.floor(levelImage.totalMinutes / 60)
-  const totalStats = levelImage.strength + levelImage.intelligence + 
+  const totalStats = levelImage.strength + levelImage.intelligence + levelImage.wisdom +
                      levelImage.dexterity + levelImage.charisma + levelImage.vitality
 
   const handleDownload = async () => {
@@ -104,6 +105,7 @@ export default function HallOfFame({ levelImage, onLike }: HallOfFameProps) {
                 <div className="space-y-2">
                   <StatBar label="STR" value={levelImage.strength} max={100} color="red" />
                   <StatBar label="INT" value={levelImage.intelligence} max={100} color="blue" />
+                  <StatBar label="WIS" value={levelImage.wisdom} max={100} color="indigo" />
                   <StatBar label="DEX" value={levelImage.dexterity} max={100} color="green" />
                   <StatBar label="CHA" value={levelImage.charisma} max={100} color="purple" />
                   <StatBar label="VIT" value={levelImage.vitality} max={100} color="orange" />
@@ -174,6 +176,7 @@ function StatBar({
   const colorClasses = {
     red: 'bg-red-500',
     blue: 'bg-blue-500',
+    indigo: 'bg-indigo-500',
     green: 'bg-green-500',
     purple: 'bg-purple-500',
     orange: 'bg-orange-500'

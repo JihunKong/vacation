@@ -44,11 +44,12 @@ export async function GET(req: NextRequest) {
 
     const profile = targetUser.studentProfile;
 
-    // 테스트용 스탯 (실제 프로필 데이터 사용)
+    // 테스트용 스탯 (실제 프로필 데이터 사용, 6개 능력치)
     const stats: CharacterStats = {
       level: testLevel,
       strength: profile.strength,
       intelligence: profile.intelligence,
+      wisdom: profile.wisdom ?? 10,  // WIS: 지혜 (독서)
       dexterity: profile.dexterity,
       charisma: profile.charisma,
       vitality: profile.vitality,

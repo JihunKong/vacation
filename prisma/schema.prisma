@@ -97,9 +97,10 @@ model StudentProfile {
   totalXP         Int       @default(0)
   avatarImageUrl  String?
   
-  // 아바타 능력치
+  // 아바타 능력치 (6개)
   strength        Int       @default(10)  // STR: 힘 (운동)
-  intelligence    Int       @default(10)  // INT: 지능 (학습, 독서)
+  intelligence    Int       @default(10)  // INT: 지능 (학습)
+  wisdom          Int       @default(10)  // WIS: 지혜 (독서)
   dexterity       Int       @default(10)  // DEX: 민첩성 (취미)
   charisma        Int       @default(10)  // CHA: 매력 (봉사)
   vitality        Int       @default(10)  // VIT: 활력 (기타)
@@ -564,9 +565,10 @@ model LevelImage {
   imageUrl        String    // 생성된 이미지 URL
   prompt          String    @db.Text // 사용된 프롬프트
   
-  // 이미지 생성 시점의 능력치
+  // 이미지 생성 시점의 능력치 (6개)
   strength        Int
   intelligence    Int
+  wisdom          Int       @default(10)  // 기존 이미지는 기본값 10으로
   dexterity       Int
   charisma        Int
   vitality        Int

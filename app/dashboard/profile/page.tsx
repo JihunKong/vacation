@@ -192,10 +192,10 @@ export default async function ProfilePage() {
                 </div>
               </div>
               
-              {/* 능력치 */}
+              {/* 능력치 (6개) */}
               <div className="mt-6">
                 <h4 className="font-medium mb-3">능력치</h4>
-                <div className="grid gap-2 md:grid-cols-5">
+                <div className="grid gap-2 md:grid-cols-6">
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">STR</p>
                     <p className="font-bold">{user.studentProfile.strength}</p>
@@ -203,6 +203,10 @@ export default async function ProfilePage() {
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">INT</p>
                     <p className="font-bold">{user.studentProfile.intelligence}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">WIS</p>
+                    <p className="font-bold">{user.studentProfile.wisdom}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">DEX</p>

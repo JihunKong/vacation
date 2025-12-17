@@ -14,6 +14,7 @@ interface LevelImage {
   imageUrl: string
   strength: number
   intelligence: number
+  wisdom: number        // WIS: 지혜 (독서)
   dexterity: number
   charisma: number
   vitality: number
@@ -40,7 +41,7 @@ export default function LevelCard({ levelImage, onLike, isCompact = false }: Lev
   const cardRef = useRef<HTMLDivElement>(null)
   
   const totalHours = Math.floor(levelImage.totalMinutes / 60)
-  const totalStats = levelImage.strength + levelImage.intelligence + 
+  const totalStats = levelImage.strength + levelImage.intelligence + levelImage.wisdom +
                      levelImage.dexterity + levelImage.charisma + levelImage.vitality
 
   const getLevelTier = (level: number) => {
@@ -157,10 +158,11 @@ export default function LevelCard({ levelImage, onLike, isCompact = false }: Lev
               </div>
             </div>
 
-            {/* 능력치 */}
-            <div className="grid grid-cols-5 gap-2 p-3 bg-white rounded-lg">
+            {/* 능력치 (6개) */}
+            <div className="grid grid-cols-6 gap-2 p-3 bg-white rounded-lg">
               <StatItem label="STR" value={levelImage.strength} />
               <StatItem label="INT" value={levelImage.intelligence} />
+              <StatItem label="WIS" value={levelImage.wisdom} />
               <StatItem label="DEX" value={levelImage.dexterity} />
               <StatItem label="CHA" value={levelImage.charisma} />
               <StatItem label="VIT" value={levelImage.vitality} />

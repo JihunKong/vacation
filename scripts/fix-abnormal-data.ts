@@ -45,10 +45,11 @@ async function fixAbnormalData() {
       // 4. 올바른 레벨과 경험치 계산
       const { level, currentXP, requiredXP } = calculateLevel(actualTotalXP)
 
-      // 5. 능력치 재계산
+      // 5. 능력치 재계산 (6개 능력치)
       const statTotals = {
         strength: 10,
         intelligence: 10,
+        wisdom: 10,
         dexterity: 10,
         charisma: 10,
         vitality: 10,
@@ -65,8 +66,8 @@ async function fixAbnormalData() {
         }
       })
 
-      // 6. 데이터 비교 및 수정
-      const needsUpdate = 
+      // 6. 데이터 비교 및 수정 (6개 능력치)
+      const needsUpdate =
         profile.totalXP !== actualTotalXP ||
         profile.totalMinutes !== actualTotalMinutes ||
         profile.level !== level ||
@@ -74,6 +75,7 @@ async function fixAbnormalData() {
         profile.xpForNextLevel !== requiredXP ||
         profile.strength !== statTotals.strength ||
         profile.intelligence !== statTotals.intelligence ||
+        (profile as any).wisdom !== statTotals.wisdom ||  // wisdom은 새 필드
         profile.dexterity !== statTotals.dexterity ||
         profile.charisma !== statTotals.charisma ||
         profile.vitality !== statTotals.vitality
@@ -86,7 +88,7 @@ async function fixAbnormalData() {
           - 현재 경험치: ${profile.experience} → ${currentXP}
           - 다음 레벨 필요 XP: ${profile.xpForNextLevel} → ${requiredXP}`)
 
-        // 데이터베이스 업데이트
+        // 데이터베이스 업데이트 (6개 능력치)
         await prisma.studentProfile.update({
           where: { id: profile.id },
           data: {
@@ -97,6 +99,7 @@ async function fixAbnormalData() {
             xpForNextLevel: requiredXP,
             strength: statTotals.strength,
             intelligence: statTotals.intelligence,
+            wisdom: statTotals.wisdom,
             dexterity: statTotals.dexterity,
             charisma: statTotals.charisma,
             vitality: statTotals.vitality,

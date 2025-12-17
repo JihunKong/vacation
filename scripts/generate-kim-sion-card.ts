@@ -28,7 +28,7 @@ async function generateKimSionCard() {
 
     console.log(`학생 발견: ${user.name} (${user.email})`)
     console.log(`현재 레벨: ${user.studentProfile!.level}`)
-    console.log(`스텟 - STR: ${user.studentProfile!.strength}, INT: ${user.studentProfile!.intelligence}, DEX: ${user.studentProfile!.dexterity}, CHA: ${user.studentProfile!.charisma}, VIT: ${user.studentProfile!.vitality}`)
+    console.log(`스텟 - STR: ${user.studentProfile!.strength}, INT: ${user.studentProfile!.intelligence}, WIS: ${user.studentProfile!.wisdom ?? 10}, DEX: ${user.studentProfile!.dexterity}, CHA: ${user.studentProfile!.charisma}, VIT: ${user.studentProfile!.vitality}`)
 
     // 10레벨 단위 체크
     const milestones = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -58,11 +58,12 @@ async function generateKimSionCard() {
       console.log(`\n${milestone}레벨 이미지 생성 중...`)
 
       try {
-        // CharacterStats 객체 생성 - milestone 레벨로 설정
+        // CharacterStats 객체 생성 - milestone 레벨로 설정 (6개 능력치)
         const stats: CharacterStats = {
           level: milestone,  // 마일스톤 레벨로 설정
           strength: user.studentProfile.strength,
           intelligence: user.studentProfile.intelligence,
+          wisdom: user.studentProfile.wisdom ?? 10,  // WIS: 지혜 (독서)
           dexterity: user.studentProfile.dexterity,
           charisma: user.studentProfile.charisma,
           vitality: user.studentProfile.vitality,
@@ -79,7 +80,7 @@ async function generateKimSionCard() {
           continue
         }
 
-        // 데이터베이스에 저장
+        // 데이터베이스에 저장 (6개 능력치)
         const savedImage = await prisma.levelImage.create({
           data: {
             studentId: user.studentProfile.id,
@@ -88,6 +89,7 @@ async function generateKimSionCard() {
             prompt: `Level ${milestone} character card`,
             strength: user.studentProfile.strength,
             intelligence: user.studentProfile.intelligence,
+            wisdom: user.studentProfile.wisdom ?? 10,
             dexterity: user.studentProfile.dexterity,
             charisma: user.studentProfile.charisma,
             vitality: user.studentProfile.vitality,

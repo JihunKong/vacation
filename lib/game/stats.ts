@@ -1,36 +1,36 @@
 import { Category } from "@prisma/client"
 
-// 능력치 타입
-export type StatType = 'strength' | 'intelligence' | 'dexterity' | 'charisma' | 'vitality'
+// 능력치 타입 (6개로 확장)
+export type StatType = 'strength' | 'intelligence' | 'wisdom' | 'dexterity' | 'charisma' | 'vitality'
 
-// 카테고리별 능력치 매핑
+// 카테고리별 능력치 매핑 (독서 → WIS로 분리)
 export const CATEGORY_STAT_MAP: Record<Category, StatType> = {
-  [Category.EXERCISE]: 'strength',      // 운동 → 힘
-  [Category.STUDY]: 'intelligence',     // 학습 → 지능
-  [Category.READING]: 'intelligence',   // 독서 → 지능
-  [Category.HOBBY]: 'dexterity',       // 취미 → 민첩성
-  [Category.VOLUNTEER]: 'charisma',    // 봉사 → 매력
-  [Category.OTHER]: 'vitality',        // 기타 → 활력
+  [Category.EXERCISE]: 'strength',      // 운동 → 힘 (STR)
+  [Category.STUDY]: 'intelligence',     // 학습 → 지능 (INT)
+  [Category.READING]: 'wisdom',         // 독서 → 지혜 (WIS) - INT에서 분리!
+  [Category.HOBBY]: 'dexterity',        // 취미 → 민첩성 (DEX)
+  [Category.VOLUNTEER]: 'charisma',     // 봉사 → 매력 (CHA)
+  [Category.OTHER]: 'vitality',         // 기타 → 활력 (VIT)
 }
 
-// 카테고리별 XP 가중치
+// 카테고리별 XP 가중치 (균등화)
 export const CATEGORY_XP_WEIGHT: Record<Category, number> = {
-  [Category.STUDY]: 1.2,      // 학습 활동 보너스
-  [Category.EXERCISE]: 1.0,
-  [Category.READING]: 1.1,
-  [Category.HOBBY]: 0.9,
-  [Category.VOLUNTEER]: 1.1,
-  [Category.OTHER]: 0.8,
+  [Category.STUDY]: 1.0,      // 학습 (균등화: 1.2 → 1.0)
+  [Category.EXERCISE]: 1.0,   // 운동
+  [Category.READING]: 1.0,    // 독서 (균등화: 1.1 → 1.0)
+  [Category.HOBBY]: 1.0,      // 취미 (균등화: 0.9 → 1.0)
+  [Category.VOLUNTEER]: 1.0,  // 봉사 (균등화: 1.1 → 1.0)
+  [Category.OTHER]: 0.9,      // 기타 (소폭 상향: 0.8 → 0.9)
 }
 
-// 카테고리별 일일 시간 제한 (분)
+// 카테고리별 일일 시간 제한 (분) - 재분배하여 밸런스 조정
 export const CATEGORY_DAILY_LIMIT: Record<Category, number> = {
-  [Category.STUDY]: 300,      // 5시간
-  [Category.READING]: 180,    // 3시간
-  [Category.EXERCISE]: 60,    // 1시간
-  [Category.HOBBY]: 60,       // 1시간
-  [Category.VOLUNTEER]: 60,   // 1시간
-  [Category.OTHER]: 30,       // 30분
+  [Category.STUDY]: 180,      // 3시간 (하향: 300분 → 180분)
+  [Category.READING]: 120,    // 2시간 (하향: 180분 → 120분)
+  [Category.EXERCISE]: 120,   // 2시간 (상향: 60분 → 120분)
+  [Category.HOBBY]: 90,       // 1.5시간 (상향: 60분 → 90분)
+  [Category.VOLUNTEER]: 90,   // 1.5시간 (상향: 60분 → 90분)
+  [Category.OTHER]: 60,       // 1시간 (상향: 30분 → 60분)
 }
 
 // 레벨별 필요 경험치 계산
@@ -80,17 +80,18 @@ export function calculateStatIncrease(
   const xp = calculateXP(minutes, category, hasStreak)
   const points = calculateStatPoints(xp)
   const stat = CATEGORY_STAT_MAP[category]
-  
+
   const statPoints: Record<StatType, number> = {
     strength: 0,
     intelligence: 0,
+    wisdom: 0,
     dexterity: 0,
     charisma: 0,
     vitality: 0,
   }
-  
+
   statPoints[stat] = points
-  
+
   return { xp, statPoints }
 }
 
@@ -137,17 +138,18 @@ export function calculateStatIncreaseWithLimit(
   const xp = calculateXPWithDailyLimit(minutes, category, todayMinutesInCategory, hasStreak)
   const points = calculateStatPoints(xp)
   const stat = CATEGORY_STAT_MAP[category]
-  
+
   const statPoints: Record<StatType, number> = {
     strength: 0,
     intelligence: 0,
+    wisdom: 0,
     dexterity: 0,
     charisma: 0,
     vitality: 0,
   }
-  
+
   statPoints[stat] = points
-  
+
   return { xp, statPoints }
 }
 
@@ -166,7 +168,7 @@ export function getXPRangeForLevel(level: number): { minXP: number; maxXP: numbe
   return { minXP, maxXP }
 }
 
-// 능력치 설명
+// 능력치 설명 (6개 능력치)
 export const STAT_DESCRIPTIONS: Record<StatType, { name: string; description: string; icon: string }> = {
   strength: {
     name: "힘 (STR)",
@@ -175,8 +177,13 @@ export const STAT_DESCRIPTIONS: Record<StatType, { name: string; description: st
   },
   intelligence: {
     name: "지능 (INT)",
-    description: "학습과 독서로 기르는 지적 능력",
+    description: "학습으로 기르는 지적 능력",
     icon: "🧠"
+  },
+  wisdom: {
+    name: "지혜 (WIS)",
+    description: "독서로 기르는 통찰력과 판단력",
+    icon: "📚"
   },
   dexterity: {
     name: "민첩성 (DEX)",

@@ -126,13 +126,14 @@ export default async function StatsPage() {
             <CardDescription>활동을 통해 성장한 능력치</CardDescription>
           </CardHeader>
           <CardContent>
-            <AvatarDisplay 
+            <AvatarDisplay
               level={studentProfile.level}
               experience={studentProfile.experience}
               requiredXP={studentProfile.xpForNextLevel}
               stats={{
                 strength: studentProfile.strength,
                 intelligence: studentProfile.intelligence,
+                wisdom: studentProfile.wisdom,
                 dexterity: studentProfile.dexterity,
                 charisma: studentProfile.charisma,
                 vitality: studentProfile.vitality,

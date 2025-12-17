@@ -85,11 +85,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 캐릭터 스탯 준비 (개인정보 보호를 위해 이름 제외)
+    // 캐릭터 스탯 준비 (개인정보 보호를 위해 이름 제외, 6개 능력치)
     const stats: CharacterStats = {
       level,
       strength: profile.strength,
       intelligence: profile.intelligence,
+      wisdom: profile.wisdom ?? 10,  // 기존 데이터는 기본값 10
       dexterity: profile.dexterity,
       charisma: profile.charisma,
       vitality: profile.vitality,
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 데이터베이스에 저장
+    // 데이터베이스에 저장 (6개 능력치)
     const levelImage = await prisma.levelImage.upsert({
       where: {
         id: existingImage?.id || 'new'
@@ -117,6 +118,7 @@ export async function POST(req: NextRequest) {
         prompt: result.prompt || '',
         strength: profile.strength,
         intelligence: profile.intelligence,
+        wisdom: profile.wisdom ?? 10,
         dexterity: profile.dexterity,
         charisma: profile.charisma,
         vitality: profile.vitality,
@@ -131,6 +133,7 @@ export async function POST(req: NextRequest) {
         prompt: result.prompt || '',
         strength: profile.strength,
         intelligence: profile.intelligence,
+        wisdom: profile.wisdom ?? 10,
         dexterity: profile.dexterity,
         charisma: profile.charisma,
         vitality: profile.vitality,

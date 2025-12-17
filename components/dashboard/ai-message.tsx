@@ -13,6 +13,7 @@ interface AIMessageProps {
     recentActivity?: string
     strength: number
     intelligence: number
+    wisdom: number        // WIS: 지혜 (독서)
     dexterity: number
     charisma: number
     vitality: number

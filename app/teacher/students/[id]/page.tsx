@@ -170,14 +170,14 @@ export default async function StudentDetailPage({
         </Card>
       </div>
       
-      {/* 능력치 */}
+      {/* 능력치 (6개) */}
       <Card>
         <CardHeader>
           <CardTitle>능력치</CardTitle>
           <CardDescription>활동 카테고리별 성장 상태</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-5">
+          <div className="grid gap-4 md:grid-cols-6">
             <div>
               <p className="text-sm font-medium">STR (힘)</p>
               <p className="text-2xl font-bold">{profile.strength}</p>
@@ -186,7 +186,12 @@ export default async function StudentDetailPage({
             <div>
               <p className="text-sm font-medium">INT (지능)</p>
               <p className="text-2xl font-bold">{profile.intelligence}</p>
-              <p className="text-xs text-muted-foreground">학습, 독서</p>
+              <p className="text-xs text-muted-foreground">학습</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium">WIS (지혜)</p>
+              <p className="text-2xl font-bold">{profile.wisdom}</p>
+              <p className="text-xs text-muted-foreground">독서</p>
             </div>
             <div>
               <p className="text-sm font-medium">DEX (민첩)</p>

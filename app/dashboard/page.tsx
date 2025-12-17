@@ -95,7 +95,7 @@ export default async function DashboardPage() {
   // 최근 활동 제목 (AI 메시지용)
   const recentActivity = studentProfile.activities[0]?.title
 
-  // AI 메시지용 학생 데이터
+  // AI 메시지용 학생 데이터 (6개 능력치)
   const studentData = {
     level,
     totalXP: studentProfile.totalXP,
@@ -103,6 +103,7 @@ export default async function DashboardPage() {
     recentActivity,
     strength: studentProfile.strength,
     intelligence: studentProfile.intelligence,
+    wisdom: studentProfile.wisdom,
     dexterity: studentProfile.dexterity,
     charisma: studentProfile.charisma,
     vitality: studentProfile.vitality,
@@ -130,6 +131,7 @@ export default async function DashboardPage() {
             stats={{
               strength: studentProfile.strength,
               intelligence: studentProfile.intelligence,
+              wisdom: studentProfile.wisdom,
               dexterity: studentProfile.dexterity,
               charisma: studentProfile.charisma,
               vitality: studentProfile.vitality,

@@ -6,6 +6,7 @@ export interface CharacterStats {
   level: number;
   strength: number;
   intelligence: number;
+  wisdom: number;       // WIS: 지혜 (독서) - 신규 추가
   dexterity: number;
   charisma: number;
   vitality: number;
@@ -49,7 +50,7 @@ function getRandomCharacterType(): { type: string; description: string } {
   return characterTypes[Math.floor(Math.random() * characterTypes.length)];
 }
 
-// 능력치 기반 캐릭터 설명 생성
+// 능력치 기반 캐릭터 설명 생성 (6개 능력치)
 function generateCharacterDescription(stats: CharacterStats): {
   characterType: string;
   characterDescription: string;
@@ -57,19 +58,22 @@ function generateCharacterDescription(stats: CharacterStats): {
   characterStyle: string;
   levelEffect: string;
 } {
-  const { level, strength, intelligence, dexterity, charisma, vitality } = stats;
-  
+  const { level, strength, intelligence, wisdom, dexterity, charisma, vitality } = stats;
+
   // 랜덤 캐릭터 타입 선택
   const characterType = getRandomCharacterType();
-  
-  // 주요 스탯 결정
-  const maxStat = Math.max(strength, intelligence, dexterity, charisma, vitality);
+
+  // 주요 스탯 결정 (6개 능력치)
+  const maxStat = Math.max(strength, intelligence, wisdom, dexterity, charisma, vitality);
   let characterClass = "Balanced Student";
   let characterStyle = "well-rounded abilities";
-  
+
   if (intelligence === maxStat) {
     characterClass = "Arcane Scholar";
     characterStyle = "magical aura, glowing books, mystical symbols, scholarly accessories";
+  } else if (wisdom === maxStat) {
+    characterClass = "Wise Sage";
+    characterStyle = "ancient knowledge aura, reading scrolls, serene expression, mystical wisdom";
   } else if (strength === maxStat) {
     characterClass = "Mighty Warrior";
     characterStyle = "strong build, protective gear, powerful stance, athletic appearance";
@@ -117,14 +121,14 @@ Character Details:
 - Class: ${characterDesc.characterClass}
 - Style: ${characterDesc.characterStyle}
 - Level Effects: ${characterDesc.levelEffect}
-- Stats Display: STR ${stats.strength} | INT ${stats.intelligence} | DEX ${stats.dexterity} | CHA ${stats.charisma} | VIT ${stats.vitality}
+- Stats Display: STR ${stats.strength} | INT ${stats.intelligence} | WIS ${stats.wisdom} | DEX ${stats.dexterity} | CHA ${stats.charisma} | VIT ${stats.vitality}
 - Experience: ${stats.totalXP} XP earned through ${totalHours} hours of study
 
 Visual Requirements:
 - Character should be a ${characterDesc.characterDescription} in a heroic/academic pose
 - Elegant RPG-style card frame with ornate borders and decorative elements
 - Level ${stats.level} prominently displayed at the top in bold numbers
-- Stat bars or icons showing the five attributes (STR, INT, DEX, CHA, VIT)
+- Stat bars or icons showing the six attributes (STR, INT, WIS, DEX, CHA, VIT)
 - Fantasy academy/magical school background with books, scrolls, or study elements
 - Color scheme based on level tier:
   * Bronze theme (10-19): Warm browns and golds
@@ -250,9 +254,9 @@ export async function generateLevelImage(stats: CharacterStats): Promise<{
   }
 }
 
-// 플레이스홀더 SVG 생성
+// 플레이스홀더 SVG 생성 (6개 능력치)
 function createPlaceholderSVG(stats: CharacterStats): string {
-  const { level, strength, intelligence, dexterity, charisma, vitality, totalXP, totalMinutes } = stats;
+  const { level, strength, intelligence, wisdom, dexterity, charisma, vitality, totalXP, totalMinutes } = stats;
   const totalHours = Math.floor(totalMinutes / 60);
   
   // 레벨에 따른 색상
@@ -296,15 +300,16 @@ function createPlaceholderSVG(stats: CharacterStats): string {
     <circle cx="256" cy="230" r="60" fill="#E5E7EB"/>
     <text x="256" y="240" font-family="Arial, sans-serif" font-size="48" text-anchor="middle">👤</text>
     
-    <!-- Stats -->
-    <g transform="translate(60, 320)">
+    <!-- Stats (6개 능력치) -->
+    <g transform="translate(45, 320)">
       <text x="0" y="0" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#374151">능력치</text>
-      
-      <text x="0" y="30" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">STR: ${strength}</text>
-      <text x="80" y="30" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">INT: ${intelligence}</text>
-      <text x="160" y="30" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">DEX: ${dexterity}</text>
-      <text x="240" y="30" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">CHA: ${charisma}</text>
-      <text x="320" y="30" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">VIT: ${vitality}</text>
+
+      <text x="0" y="30" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">STR: ${strength}</text>
+      <text x="70" y="30" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">INT: ${intelligence}</text>
+      <text x="140" y="30" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">WIS: ${wisdom}</text>
+      <text x="210" y="30" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">DEX: ${dexterity}</text>
+      <text x="280" y="30" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">CHA: ${charisma}</text>
+      <text x="350" y="30" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">VIT: ${vitality}</text>
     </g>
     
     <!-- XP and Time -->
