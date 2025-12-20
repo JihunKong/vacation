@@ -102,14 +102,29 @@ export default function HallOfFame({ levelImage, onLike }: HallOfFameProps) {
               {/* 능력치 */}
               <div className="space-y-3 p-4 bg-white/80 rounded-lg border border-yellow-200">
                 <h4 className="font-semibold text-sm text-gray-700 mb-2">캐릭터 능력치</h4>
-                <div className="space-y-2">
-                  <StatBar label="STR" value={levelImage.strength} max={100} color="red" />
-                  <StatBar label="INT" value={levelImage.intelligence} max={100} color="blue" />
-                  <StatBar label="WIS" value={levelImage.wisdom} max={100} color="indigo" />
-                  <StatBar label="DEX" value={levelImage.dexterity} max={100} color="green" />
-                  <StatBar label="CHA" value={levelImage.charisma} max={100} color="purple" />
-                  <StatBar label="VIT" value={levelImage.vitality} max={100} color="orange" />
-                </div>
+                {(() => {
+                  // 동적 스케일링: 최대 능력치의 125%를 상한으로 설정 (100 단위로 반올림)
+                  const maxStatValue = Math.max(
+                    levelImage.strength,
+                    levelImage.intelligence,
+                    levelImage.wisdom,
+                    levelImage.dexterity,
+                    levelImage.charisma,
+                    levelImage.vitality
+                  )
+                  const statScale = Math.max(100, Math.ceil(maxStatValue * 1.25 / 100) * 100)
+
+                  return (
+                    <div className="space-y-2">
+                      <StatBar label="STR" value={levelImage.strength} max={statScale} color="red" />
+                      <StatBar label="INT" value={levelImage.intelligence} max={statScale} color="blue" />
+                      <StatBar label="WIS" value={levelImage.wisdom} max={statScale} color="indigo" />
+                      <StatBar label="DEX" value={levelImage.dexterity} max={statScale} color="green" />
+                      <StatBar label="CHA" value={levelImage.charisma} max={statScale} color="purple" />
+                      <StatBar label="VIT" value={levelImage.vitality} max={statScale} color="orange" />
+                    </div>
+                  )
+                })()}
                 <div className="pt-2 border-t">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">총 능력치</span>
